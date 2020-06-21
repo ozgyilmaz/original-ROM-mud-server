@@ -14,7 +14,7 @@
  *  benefitting.  We hope that you share your changes too.  What goes	   *
  *  around, comes around.						   *
  ***************************************************************************/
- 
+
 /***************************************************************************
 *	ROM 2.4 is copyright 1993-1998 Russ Taylor			   *
 *	ROM has been brought to you by the ROM consortium		   *
@@ -51,7 +51,7 @@ void do_function args((CHAR_DATA *ch, DO_FUN *do_fun, char *argument));
  */
 struct	cmd_type
 {
-    char * const	name;
+    const char *	name;
     DO_FUN *		do_fun;
     sh_int		position;
     sh_int		level;

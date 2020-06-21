@@ -14,7 +14,7 @@
  *  benefitting.  We hope that you share your changes too.  What goes      *
  *  around, comes around.                                                  *
  ***************************************************************************/
- 
+
 /***************************************************************************
 *	ROM 2.4 is copyright 1993-1998 Russ Taylor			   *
 *	ROM has been brought to you by the ROM consortium		   *
@@ -56,7 +56,7 @@ void acid_effect(void *vo, int level, int dam, int target)
     {
 	CHAR_DATA *victim = (CHAR_DATA *) vo;
 	OBJ_DATA *obj, *obj_next;
-	
+
 	/* let's toast some gear */
 	for (obj = victim->carrying; obj != NULL; obj = obj_next)
 	{
@@ -71,7 +71,7 @@ void acid_effect(void *vo, int level, int dam, int target)
 	OBJ_DATA *obj = (OBJ_DATA *) vo;
 	OBJ_DATA *t_obj,*n_obj;
 	int chance;
-	char *msg;
+	const char *msg;
 
 	if (IS_OBJ_STAT(obj,ITEM_BURN_PROOF)
 	||  IS_OBJ_STAT(obj,ITEM_NOPURGE)
@@ -113,7 +113,7 @@ void acid_effect(void *vo, int level, int dam, int target)
 	    case ITEM_SCROLL:
 		chance += 10;
 		msg = "$p is burned into waste.";
-		break; 
+		break;
 	}
 
 	chance = URANGE(5,chance,95);
@@ -145,12 +145,12 @@ void acid_effect(void *vo, int level, int dam, int target)
 		    break;
                 }
             }
- 
+
             if (!af_found)
             /* needs a new affect */
             {
 		paf = new_affect();
- 
+
                 paf->type       = -1;
                 paf->level      = level;
                 paf->duration   = -1;
@@ -160,7 +160,7 @@ void acid_effect(void *vo, int level, int dam, int target)
                 paf->next       = obj->affected;
                 obj->affected   = paf;
             }
- 
+
             if (obj->carried_by != NULL && obj->wear_loc != WEAR_NONE)
                 for (i = 0; i < 4; i++)
                     obj->carried_by->armor[i] += 1;
@@ -200,7 +200,7 @@ void cold_effect(void *vo, int level, int dam, int target)
     {
         ROOM_INDEX_DATA *room = (ROOM_INDEX_DATA *) vo;
         OBJ_DATA *obj, *obj_next;
- 
+
         for (obj = room->contents; obj != NULL; obj = obj_next)
         {
             obj_next = obj->next_content;
@@ -213,7 +213,7 @@ void cold_effect(void *vo, int level, int dam, int target)
     {
 	CHAR_DATA *victim = (CHAR_DATA *) vo;
 	OBJ_DATA *obj, *obj_next;
-	
+
 	/* chill touch effect */
 	if (!saves_spell(level/4 + dam / 20, victim, DAM_COLD))
 	{
@@ -248,7 +248,7 @@ void cold_effect(void *vo, int level, int dam, int target)
    {
 	OBJ_DATA *obj = (OBJ_DATA *) vo;
 	int chance;
-	char *msg;
+	const char *msg;
 
 	if (IS_OBJ_STAT(obj,ITEM_BURN_PROOF)
 	||  IS_OBJ_STAT(obj,ITEM_NOPURGE)
@@ -295,7 +295,7 @@ void cold_effect(void *vo, int level, int dam, int target)
 	return;
     }
 }
-   
+
 
 
 void fire_effect(void *vo, int level, int dam, int target)
@@ -312,7 +312,7 @@ void fire_effect(void *vo, int level, int dam, int target)
 	}
 	return;
     }
- 
+
     if (target == TARGET_CHAR)   /* do the effect on a victim */
     {
 	CHAR_DATA *victim = (CHAR_DATA *) vo;
@@ -326,7 +326,7 @@ void fire_effect(void *vo, int level, int dam, int target)
             act("$n is blinded by smoke!",victim,NULL,NULL,TO_ROOM);
             act("Your eyes tear up from smoke...you can't see a thing!",
 		victim,NULL,NULL,TO_CHAR);
-	 
+
             af.where        = TO_AFFECTS;
             af.type         = skill_lookup("fire breath");
             af.level        = level;
@@ -334,7 +334,7 @@ void fire_effect(void *vo, int level, int dam, int target)
             af.location     = APPLY_HITROLL;
             af.modifier     = -4;
             af.bitvector    = AFF_BLIND;
- 
+
             affect_to_char(victim,&af);
 	}
 
@@ -357,15 +357,15 @@ void fire_effect(void *vo, int level, int dam, int target)
 	OBJ_DATA *obj = (OBJ_DATA *) vo;
 	OBJ_DATA *t_obj,*n_obj;
 	int chance;
-	char *msg;
+	const char *msg;
 
     	if (IS_OBJ_STAT(obj,ITEM_BURN_PROOF)
         ||  IS_OBJ_STAT(obj,ITEM_NOPURGE)
 	||  number_range(0,4) == 0)
             return;
- 
+
         chance = level / 4 + dam / 10;
- 
+
         if (chance > 25)
             chance = (chance - 25) / 2 + 25;
         if (chance > 50)
@@ -377,7 +377,7 @@ void fire_effect(void *vo, int level, int dam, int target)
 
         switch ( obj->item_type )
         {
-        default:             
+        default:
 	    return;
         case ITEM_CONTAINER:
             msg = "$p ignites and burns!";
@@ -409,7 +409,7 @@ void fire_effect(void *vo, int level, int dam, int target)
 
         if (number_percent() > chance)
             return;
- 
+
 	if (obj->carried_by != NULL)
             act( msg, obj->carried_by, obj, NULL, TO_ALL );
 	else if (obj->in_room != NULL && obj->in_room->people != NULL)
@@ -418,7 +418,7 @@ void fire_effect(void *vo, int level, int dam, int target)
         if (obj->contains)
         {
             /* dump the contents */
- 
+
             for (t_obj = obj->contains; t_obj != NULL; t_obj = n_obj)
             {
                 n_obj = t_obj->next_content;
@@ -435,7 +435,7 @@ void fire_effect(void *vo, int level, int dam, int target)
 		fire_effect(t_obj,level/2,dam/2,TARGET_OBJ);
             }
         }
- 
+
         extract_obj( obj );
 	return;
     }
@@ -447,7 +447,7 @@ void poison_effect(void *vo,int level, int dam, int target)
     {
         ROOM_INDEX_DATA *room = (ROOM_INDEX_DATA *) vo;
         OBJ_DATA *obj, *obj_next;
- 
+
         for (obj = room->contents; obj != NULL; obj = obj_next)
         {
             obj_next = obj->next_content;
@@ -455,7 +455,7 @@ void poison_effect(void *vo,int level, int dam, int target)
         }
         return;
     }
- 
+
     if (target == TARGET_CHAR)   /* do the effect on a victim */
     {
         CHAR_DATA *victim = (CHAR_DATA *) vo;
@@ -493,7 +493,7 @@ void poison_effect(void *vo,int level, int dam, int target)
     {
 	OBJ_DATA *obj = (OBJ_DATA *) vo;
 	int chance;
-	
+
 
 	if (IS_OBJ_STAT(obj,ITEM_BURN_PROOF)
   	||  IS_OBJ_STAT(obj,ITEM_BLESS)
@@ -571,7 +571,7 @@ void shock_effect(void *vo,int level, int dam, int target)
     {
 	OBJ_DATA *obj = (OBJ_DATA *) vo;
 	int chance;
-	char *msg;
+	const char *msg;
 
 	if (IS_OBJ_STAT(obj,ITEM_BURN_PROOF)
 	||  IS_OBJ_STAT(obj,ITEM_NOPURGE)
@@ -603,7 +603,7 @@ void shock_effect(void *vo,int level, int dam, int target)
 		chance -= 10;
 		msg = "$p is fused into a worthless lump.";
 	}
-	
+
 	chance = URANGE(5,chance,95);
 
 	if (number_percent() > chance)
@@ -618,4 +618,3 @@ void shock_effect(void *vo,int level, int dam, int target)
 	return;
     }
 }
-

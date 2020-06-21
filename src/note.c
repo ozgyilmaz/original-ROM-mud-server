@@ -14,7 +14,7 @@
  *  benefitting.  We hope that you share your changes too.  What goes      *
  *  around, comes around.                                                  *
  ***************************************************************************/
- 
+
 /***************************************************************************
 *	ROM 2.4 is copyright 1993-1998 Russ Taylor			   *
 *	ROM has been brought to you by the ROM consortium		   *
@@ -48,7 +48,7 @@ extern FILE *                  fpArea;
 extern char                    strArea[MAX_INPUT_LENGTH];
 
 /* local procedures */
-void load_thread(char *name, NOTE_DATA **list, int type, time_t free_time);
+void load_thread(const char *name, NOTE_DATA **list, int type, time_t free_time);
 void parse_note(CHAR_DATA *ch, char *argument, int type);
 bool hide_note(CHAR_DATA *ch, NOTE_DATA *pnote);
 
@@ -70,14 +70,14 @@ int count_spool(CHAR_DATA *ch, NOTE_DATA *spool)
     return count;
 }
 
-void do_unread(CHAR_DATA *ch)
+void do_unread(CHAR_DATA *ch, char *argument)
 {
     char buf[MAX_STRING_LENGTH];
     int count;
     bool found = FALSE;
 
     if (IS_NPC(ch))
-	return; 
+	return;
 
     if ((count = count_spool(ch,news_list)) > 0)
     {
@@ -147,7 +147,7 @@ void do_changes(CHAR_DATA *ch,char *argument)
 void save_notes(int type)
 {
     FILE *fp;
-    char *name;
+    const char *name;
     NOTE_DATA *pnote;
 
     switch (type)
@@ -206,20 +206,20 @@ void load_notes(void)
     load_thread(CHANGES_FILE,&changes_list,NOTE_CHANGES, 0);
 }
 
-void load_thread(char *name, NOTE_DATA **list, int type, time_t free_time)
+void load_thread(const char *name, NOTE_DATA **list, int type, time_t free_time)
 {
     FILE *fp;
     NOTE_DATA *pnotelast;
- 
+
     if ( ( fp = fopen( name, "r" ) ) == NULL )
 	return;
-	 
+
     pnotelast = NULL;
     for ( ; ; )
     {
 	NOTE_DATA *pnote;
 	char letter;
-	 
+
 	do
 	{
 	    letter = getc( fp );
@@ -231,33 +231,33 @@ void load_thread(char *name, NOTE_DATA **list, int type, time_t free_time)
         }
         while ( isspace(letter) );
         ungetc( letter, fp );
- 
-        pnote           = alloc_perm( sizeof(*pnote) );
- 
+
+        pnote           = (NOTE_DATA *)alloc_perm( sizeof(*pnote) );
+
         if ( str_cmp( fread_word( fp ), "sender" ) )
             break;
         pnote->sender   = fread_string( fp );
- 
+
         if ( str_cmp( fread_word( fp ), "date" ) )
             break;
         pnote->date     = fread_string( fp );
- 
+
         if ( str_cmp( fread_word( fp ), "stamp" ) )
             break;
         pnote->date_stamp = fread_number(fp);
- 
+
         if ( str_cmp( fread_word( fp ), "to" ) )
             break;
         pnote->to_list  = fread_string( fp );
- 
+
         if ( str_cmp( fread_word( fp ), "subject" ) )
             break;
         pnote->subject  = fread_string( fp );
- 
+
         if ( str_cmp( fread_word( fp ), "text" ) )
             break;
         pnote->text     = fread_string( fp );
- 
+
         if (free_time && pnote->date_stamp < current_time - free_time)
         {
 	    free_note(pnote);
@@ -265,15 +265,15 @@ void load_thread(char *name, NOTE_DATA **list, int type, time_t free_time)
         }
 
 	pnote->type = type;
- 
+
         if (*list == NULL)
             *list           = pnote;
         else
             pnotelast->next     = pnote;
- 
+
         pnotelast       = pnote;
     }
- 
+
     strcpy( strArea, NOTE_FILE );
     fpArea = fp;
     bug( "Load_notes: bad key word.", 0 );
@@ -284,7 +284,7 @@ void load_thread(char *name, NOTE_DATA **list, int type, time_t free_time)
 void append_note(NOTE_DATA *pnote)
 {
     FILE *fp;
-    char *name;
+    const char *name;
     NOTE_DATA **list;
     NOTE_DATA *last;
 
@@ -345,13 +345,13 @@ bool is_note_to( CHAR_DATA *ch, NOTE_DATA *pnote )
     if ( !str_cmp( ch->name, pnote->sender ) )
 	return TRUE;
 
-    if ( is_exact_name( "all", pnote->to_list ) )
+    if ( is_exact_name( (char*)"all", pnote->to_list ) )
 	return TRUE;
 
-    if ( IS_IMMORTAL(ch) && is_exact_name( "immortal", pnote->to_list ) )
+    if ( IS_IMMORTAL(ch) && is_exact_name( (char*)"immortal", pnote->to_list ) )
 	return TRUE;
 
-    if (ch->clan && is_exact_name(clan_table[ch->clan].name,pnote->to_list))
+    if (ch->clan && is_exact_name((char*)clan_table[ch->clan].name,pnote->to_list))
 	return TRUE;
 
     if (is_exact_name( ch->name, pnote->to_list ) )
@@ -384,7 +384,7 @@ void note_attach( CHAR_DATA *ch, int type )
 
 
 
-void note_remove( CHAR_DATA *ch, NOTE_DATA *pnote, bool delete)
+void note_remove( CHAR_DATA *ch, NOTE_DATA *pnote, bool idelete)
 {
     char to_new[MAX_INPUT_LENGTH];
     char to_one[MAX_INPUT_LENGTH];
@@ -392,7 +392,7 @@ void note_remove( CHAR_DATA *ch, NOTE_DATA *pnote, bool delete)
     NOTE_DATA **list;
     char *to_list;
 
-    if (!delete)
+    if (!idelete)
     {
 	/* make a new list */
         to_new[0]	= '\0';
@@ -493,7 +493,7 @@ bool hide_note (CHAR_DATA *ch, NOTE_DATA *pnote)
 	    last_read = ch->pcdata->last_changes;
 	    break;
     }
-    
+
     if (pnote->date_stamp <= last_read)
 	return TRUE;
 
@@ -544,7 +544,7 @@ void parse_note( CHAR_DATA *ch, char *argument, int type )
     char arg[MAX_INPUT_LENGTH];
     NOTE_DATA *pnote;
     NOTE_DATA **list;
-    char *list_name;
+    const char *list_name;
     int vnum;
     int anum;
 
@@ -583,13 +583,13 @@ void parse_note( CHAR_DATA *ch, char *argument, int type )
     if ( arg[0] == '\0' || !str_prefix( arg, "read" ) )
     {
         bool fAll;
- 
+
         if ( !str_cmp( argument, "all" ) )
         {
             fAll = TRUE;
             anum = 0;
         }
- 
+
         else if ( argument[0] == '\0' || !str_prefix(argument, "next"))
         /* read next unread note */
         {
@@ -616,7 +616,7 @@ void parse_note( CHAR_DATA *ch, char *argument, int type )
 	    send_to_char(buf,ch);
             return;
         }
- 
+
         else if ( is_number( argument ) )
         {
             fAll = FALSE;
@@ -627,7 +627,7 @@ void parse_note( CHAR_DATA *ch, char *argument, int type )
             send_to_char( "Read which number?\n\r", ch );
             return;
         }
- 
+
         vnum = 0;
         for ( pnote = *list; pnote != NULL; pnote = pnote->next )
         {
@@ -646,7 +646,7 @@ void parse_note( CHAR_DATA *ch, char *argument, int type )
                 return;
             }
         }
- 
+
 	sprintf(buf,"There aren't that many %s.\n\r",list_name);
 	send_to_char(buf,ch);
         return;
@@ -660,7 +660,7 @@ void parse_note( CHAR_DATA *ch, char *argument, int type )
 	    if ( is_note_to( ch, pnote ) )
 	    {
 		sprintf( buf, "[%3d%s] %s: %s\n\r",
-		    vnum, hide_note(ch,pnote) ? " " : "N", 
+		    vnum, hide_note(ch,pnote) ? " " : "N",
 		    pnote->sender, pnote->subject );
 		send_to_char( buf, ch );
 		vnum++;
@@ -670,7 +670,7 @@ void parse_note( CHAR_DATA *ch, char *argument, int type )
 	{
 	    switch(type)
 	    {
-		case NOTE_NOTE:	
+		case NOTE_NOTE:
 		    send_to_char("There are no notes for you.\n\r",ch);
 		    break;
 		case NOTE_IDEA:
@@ -697,7 +697,7 @@ void parse_note( CHAR_DATA *ch, char *argument, int type )
             send_to_char( "Note remove which number?\n\r", ch );
             return;
         }
- 
+
         anum = atoi( argument );
         vnum = 0;
         for ( pnote = *list; pnote != NULL; pnote = pnote->next )
@@ -709,12 +709,12 @@ void parse_note( CHAR_DATA *ch, char *argument, int type )
                 return;
             }
         }
- 
+
 	sprintf(buf,"There aren't that many %s.",list_name);
 	send_to_char(buf,ch);
         return;
     }
- 
+
     if ( !str_prefix( arg, "delete" ) && get_trust(ch) >= MAX_LEVEL - 1)
     {
         if ( !is_number( argument ) )
@@ -722,7 +722,7 @@ void parse_note( CHAR_DATA *ch, char *argument, int type )
             send_to_char( "Note delete which number?\n\r", ch );
             return;
         }
- 
+
         anum = atoi( argument );
         vnum = 0;
         for ( pnote = *list; pnote != NULL; pnote = pnote->next )
@@ -744,7 +744,7 @@ void parse_note( CHAR_DATA *ch, char *argument, int type )
     {
 	switch(type)
 	{
-	    case NOTE_NOTE:	
+	    case NOTE_NOTE:
 		ch->pcdata->last_note = current_time;
 		break;
 	    case NOTE_IDEA:
@@ -792,7 +792,7 @@ void parse_note( CHAR_DATA *ch, char *argument, int type )
 
 	add_buf(buffer,ch->pnote->text);
 	add_buf(buffer,argument);
-	add_buf(buffer,"\n\r");
+	add_buf(buffer,(char*)"\n\r");
 	free_string( ch->pnote->text );
 	ch->pnote->text = str_dup( buf_string(buffer) );
 	free_buf(buffer);
@@ -957,4 +957,3 @@ void parse_note( CHAR_DATA *ch, char *argument, int type )
     send_to_char( "You can't do that.\n\r", ch );
     return;
 }
-

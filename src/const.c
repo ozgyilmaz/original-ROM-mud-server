@@ -88,7 +88,7 @@ const	struct	weapon_type	weapon_table	[]	=
 };
 
 
- 
+
 /* wiznet table and prototype for future flag setting */
 const   struct wiznet_type      wiznet_table    []              =
 {
@@ -119,7 +119,7 @@ const   struct wiznet_type      wiznet_table    []              =
 const 	struct attack_type	attack_table	[MAX_DAMAGE_MESSAGE]	=
 {
     { 	"none",		"hit",		-1		},  /*  0 */
-    {	"slice",	"slice", 	DAM_SLASH	},	
+    {	"slice",	"slice", 	DAM_SLASH	},
     {   "stab",		"stab",		DAM_PIERCE	},
     {	"slash",	"slash",	DAM_SLASH	},
     {	"whip",		"whip",		DAM_SLASH	},
@@ -169,13 +169,13 @@ const 	struct	race_type	race_table	[]		=
 	name,		pc_race?,
 	act bits,	aff_by bits,	off bits,
 	imm,		res,		vuln,
-	form,		parts 
+	form,		parts
     },
 */
     { "unique",		FALSE, 0, 0, 0, 0, 0, 0, 0, 0 },
 
-    { 
-	"human",		TRUE, 
+    {
+	"human",		TRUE,
 	0,		0, 		0,
 	0, 		0,		0,
 	A|H|M|V,	A|B|C|D|E|F|G|H|I|J|K
@@ -227,7 +227,7 @@ const 	struct	race_type	race_table	[]		=
 	"centipede",		FALSE,
 	0,		AFF_DARK_VISION,	0,
 	0,		RES_PIERCE|RES_COLD,	VULN_BASH,
- 	A|B|G|O,		A|C|K	
+ 	A|B|G|O,		A|C|K
     },
 
     {
@@ -246,9 +246,9 @@ const 	struct	race_type	race_table	[]		=
 	E|J|M|cc,	A|B|C|G|H|K
     },
 
-    { 	"dragon", 		FALSE, 
+    { 	"dragon", 		FALSE,
 	0, 			AFF_INFRARED|AFF_FLYING,	0,
-	0,			RES_FIRE|RES_BASH|RES_CHARM, 
+	0,			RES_FIRE|RES_BASH|RES_CHARM,
 	VULN_PIERCE|VULN_COLD,
 	A|H|Z,		A|C|D|E|F|G|H|I|J|K|P|Q|U|V|X
     },
@@ -258,8 +258,8 @@ const 	struct	race_type	race_table	[]		=
 	0,		0,		OFF_DODGE|ASSIST_RACE,
 	0,		0,			VULN_MAGIC,
 	A|B|G|V,	A|C|D|E|F|H|J|K|Q|V
-    },		
-   
+    },
+
     {
 	"fox",			FALSE,
 	0,		AFF_DARK_VISION,	OFF_FAST|OFF_DODGE,
@@ -315,7 +315,7 @@ const 	struct	race_type	race_table	[]		=
 	0,		0,		0,
 	0,		0,		0,
 	A|G|V,	 	A|C|D|E|F|H|J|K
-    },	
+    },
 
     {
 	"rabbit",		FALSE,
@@ -323,13 +323,13 @@ const 	struct	race_type	race_table	[]		=
 	0,		0,		0,
 	A|G|V,		A|C|D|E|F|H|J|K
     },
-    
+
     {
 	"school monster",	FALSE,
 	ACT_NOALIGN,		0,		0,
 	IMM_CHARM|IMM_SUMMON,	0,		VULN_MAGIC,
 	A|M|V,		A|B|C|D|E|F|H|J|K|Q|U
-    },	
+    },
 
     {
 	"snake",		FALSE,
@@ -337,7 +337,7 @@ const 	struct	race_type	race_table	[]		=
 	0,		RES_POISON,	VULN_COLD,
 	A|G|X|Y|cc,	A|D|E|F|K|L|Q|V|X
     },
- 
+
     {
 	"song bird",		FALSE,
 	0,		AFF_FLYING,		OFF_FAST|OFF_DODGE,
@@ -358,12 +358,12 @@ const 	struct	race_type	race_table	[]		=
 	0,		AFF_SWIM|AFF_FLYING,	0,
 	0,		RES_DROWNING,		0,
 	A|G|W,		A|C|D|E|F|H|K|P
-    },		
-  
+    },
+
     {
 	"wolf",			FALSE,
 	0,		AFF_DARK_VISION,	OFF_FAST|OFF_DODGE,
-	0,		0,		0,	
+	0,		0,		0,
 	A|G|V,		A|C|D|E|F|J|K|Q|V
     },
 
@@ -378,7 +378,7 @@ const 	struct	race_type	race_table	[]		=
     {
 	"unique",		FALSE,
 	0,		0,		0,
-	0,		0,		0,		
+	0,		0,		0,
 	0,		0
     },
 
@@ -392,12 +392,12 @@ const	struct	pc_race_type	pc_race_table	[]	=
 {
     { "null race", "", 0, { 100, 100, 100, 100 },
       { "" }, { 13, 13, 13, 13, 13 }, { 18, 18, 18, 18, 18 }, 0 },
- 
+
 /*
     {
 	"race name", 	short name, 	points,	{ class multipliers },
 	{ bonus skills },
-	{ base stats },		{ max stats },		size 
+	{ base stats },		{ max stats },		size
     },
 */
     {
@@ -406,8 +406,8 @@ const	struct	pc_race_type	pc_race_table	[]	=
 	{ 13, 13, 13, 13, 13 },	{ 18, 18, 18, 18, 18 },	SIZE_MEDIUM
     },
 
-    { 	
-	"elf",		" Elf ",	5,	{ 100, 125,  100, 120 }, 
+    {
+	"elf",		" Elf ",	5,	{ 100, 125,  100, 120 },
 	{ "sneak", "hide" },
 	{ 12, 14, 13, 15, 11 },	{ 16, 20, 18, 21, 15 }, SIZE_SMALL
     },
@@ -425,8 +425,8 @@ const	struct	pc_race_type	pc_race_table	[]	=
     }
 };
 
-	
-      	
+
+
 
 /*
  * Class table.
@@ -463,7 +463,7 @@ const	struct	class_type	class_table	[MAX_CLASS]	=
 /*
  * Titles.
  */
-char *	const			title_table	[MAX_CLASS][MAX_LEVEL+1][2] =
+const char *			title_table	[MAX_CLASS][MAX_LEVEL+1][2] =
 {
     {
 	{ "Man",			"Woman"				},
@@ -588,7 +588,7 @@ char *	const			title_table	[MAX_CLASS][MAX_LEVEL+1][2] =
 	{ "Master Cleric",		"Master Cleric"			},
 	{ "Master Cleric",		"Master Cleric"			},
 	{ "Master Cleric",		"Master Cleric"			},
-	{ "Master Cleric",		"Master Cleric"			},	
+	{ "Master Cleric",		"Master Cleric"			},
 	{ "Master Cleric",		"Master Cleric"			},
 
 	{ "Master Cleric",		"Master Cleric"			},
@@ -955,7 +955,7 @@ const	struct	liq_type	liq_table	[]	=
     { "blood",			"red",		{   0, 2, -1, 2,  6 }	},
     { "salt water",		"clear",	{   0, 1, -2, 0,  1 }	},
 
-    { "coke",			"brown",	{   0, 2,  9, 2, 12 }	}, 
+    { "coke",			"brown",	{   0, 2,  9, 2, 12 }	},
     { "root beer",		"brown",	{   0, 2,  9, 2, 12 }   },
     { "elvish wine",		"green",	{  35, 2,  8, 1,  5 }   },
     { "white wine",		"golden",	{  28, 1,  8, 1,  5 }   },
@@ -967,7 +967,7 @@ const	struct	liq_type	liq_table	[]	=
     { "vodka",			"clear",	{ 130, 1,  5, 0,  2 }   },
     { "cranberry juice",	"red",		{   0, 1,  9, 2, 12 }	},
 
-    { "orange juice",		"orange",	{   0, 2,  9, 3, 12 }   }, 
+    { "orange juice",		"orange",	{   0, 2,  9, 3, 12 }   },
     { "absinthe",		"green",	{ 200, 1,  4, 0,  2 }	},
     { "brandy",			"golden",	{  80, 1,  5, 0,  4 }	},
     { "aquavit",		"clear",	{ 140, 1,  5, 0,  2 }	},
@@ -975,7 +975,7 @@ const	struct	liq_type	liq_table	[]	=
 
     { "icewine",		"purple",	{  50, 2,  6, 1,  5 }	},
     { "amontillado",		"burgundy",	{  35, 2,  8, 1,  5 }	},
-    { "sherry",			"red",		{  38, 2,  7, 1,  5 }   },	
+    { "sherry",			"red",		{  38, 2,  7, 1,  5 }   },
     { "framboise",		"red",		{  50, 1,  7, 1,  5 }   },
     { "rum",			"amber",	{ 151, 1,  4, 0,  2 }	},
 
@@ -1023,7 +1023,7 @@ const	struct	skill_type	skill_table	[MAX_SKILL]	=
 	"bless",		{ 53,  7, 53, 8 },     { 1,  1,  2,  2},
 	spell_bless,		TAR_OBJ_CHAR_DEF,	POS_STANDING,
 	NULL,			SLOT( 3),	 5,	12,
-	"",			"You feel less righteous.", 
+	"",			"You feel less righteous.",
 	"$p's holy aura fades."
     },
 
@@ -1082,12 +1082,12 @@ const	struct	skill_type	skill_table	[MAX_SKILL]	=
 	"spell",		"!Cause Serious!",	""
     },
 
-    {   
+    {
 	"chain lightning",	{ 33, 53, 39, 36 },     { 1,  1,  2,  2},
 	spell_chain_lightning,	TAR_CHAR_OFFENSIVE,	POS_FIGHTING,
 	NULL,			SLOT(500),	25,	12,
 	"lightning",		"!Chain Lightning!",	""
-    }, 
+    },
 
     {
 	"change sex",		{ 53, 53, 53, 53 },     { 1,  1,  2,  2},
@@ -1143,7 +1143,7 @@ const	struct	skill_type	skill_table	[MAX_SKILL]	=
 	spell_create_rose,	TAR_IGNORE,		POS_STANDING,
 	NULL,			SLOT(511),	30, 	12,
 	"",			"!Create Rose!",	""
-    },  
+    },
 
     {
 	"create spring",	{ 14, 17, 23, 20 },     { 1,  1,  2,  2},
@@ -1205,7 +1205,7 @@ const	struct	skill_type	skill_table	[MAX_SKILL]	=
 	"curse",		{ 18, 18, 26, 22 },     { 1,  1,  2,  2},
 	spell_curse,		TAR_OBJ_CHAR_OFF,	POS_FIGHTING,
 	&gsn_curse,		SLOT(17),	20,	12,
-	"curse",		"The curse wears off.", 
+	"curse",		"The curse wears off.",
 	"$p is no longer impure."
     },
 
@@ -1214,7 +1214,7 @@ const	struct	skill_type	skill_table	[MAX_SKILL]	=
 	spell_demonfire,	TAR_CHAR_OFFENSIVE,	POS_FIGHTING,
 	NULL,			SLOT(505),	20,	12,
 	"torments",		"!Demonfire!",		""
-    },	
+    },
 
     {
 	"detect evil",		{ 11,  4, 12, 53 },     { 1,  1,  2,  2},
@@ -1234,7 +1234,7 @@ const	struct	skill_type	skill_table	[MAX_SKILL]	=
 	"detect hidden",	{ 15, 11, 12, 53 },     { 1,  1,  2,  2},
 	spell_detect_hidden,	TAR_CHAR_SELF,		POS_STANDING,
 	NULL,			SLOT(44),	 5,	12,
-	"",			"You feel less aware of your surroundings.",	
+	"",			"You feel less aware of your surroundings.",
 	""
     },
 
@@ -1329,7 +1329,7 @@ const	struct	skill_type	skill_table	[MAX_SKILL]	=
 	spell_farsight,		TAR_IGNORE,		POS_STANDING,
 	NULL,			SLOT(521),	36,	20,
 	"farsight",		"!Farsight!",		""
-    },	
+    },
 
     {
 	"fireball",		{ 22, 53, 30, 26 },     { 1,  1,  2,  2},
@@ -1337,7 +1337,7 @@ const	struct	skill_type	skill_table	[MAX_SKILL]	=
 	NULL,			SLOT(26),	15,	12,
 	"fireball",		"!Fireball!",		""
     },
-  
+
     {
 	"fireproof",		{ 13, 12, 19, 18 },	{ 1, 1, 2, 2},
 	spell_fireproof,	TAR_OBJ_INV,		POS_STANDING,
@@ -1393,7 +1393,7 @@ const	struct	skill_type	skill_table	[MAX_SKILL]	=
 	NULL,			SLOT(27),	35,	12,
 	"harm spell",		"!Harm!,		"""
     },
-  
+
     {
 	"haste",		{ 21, 53, 26, 29 },     { 1,  1,  2,  2},
 	spell_haste,		TAR_CHAR_DEFENSIVE,	POS_FIGHTING,
@@ -1407,7 +1407,7 @@ const	struct	skill_type	skill_table	[MAX_SKILL]	=
 	NULL,			SLOT(28),	50,	12,
 	"",			"!Heal!",		""
     },
-  
+
     {
 	"heat metal",		{ 53, 16, 53, 23 },	{ 1, 1, 2, 2 },
 	spell_heat_metal,	TAR_CHAR_OFFENSIVE,	POS_FIGHTING,
@@ -1440,7 +1440,7 @@ const	struct	skill_type	skill_table	[MAX_SKILL]	=
 	"invisibility",		{  5, 53, 9, 53 },     { 1,  1,  2,  2},
 	spell_invis,		TAR_OBJ_CHAR_DEF,	POS_STANDING,
 	&gsn_invis,		SLOT(29),	 5,	12,
-	"",			"You are no longer invisible.",		
+	"",			"You are no longer invisible.",
 	"$p fades into view."
     },
 
@@ -1511,12 +1511,12 @@ const	struct	skill_type	skill_table	[MAX_SKILL]	=
 	"poison",		{ 17,  12, 15, 21 },     { 1,  1,  2,  2},
 	spell_poison,		TAR_OBJ_CHAR_OFF,	POS_FIGHTING,
 	&gsn_poison,		SLOT(33),	10,	12,
-	"poison",		"You feel less sick.",	
+	"poison",		"You feel less sick.",
 	"The poison on $p dries up."
     },
 
     {
-        "portal",               { 35, 30, 45, 40 },     { 2,  2,  4,  4}, 
+        "portal",               { 35, 30, 45, 40 },     { 2,  2,  4,  4},
         spell_portal,           TAR_IGNORE,             POS_STANDING,
         NULL,                   SLOT(519),       100,     24,
         "",                     "!Portal!",		""
@@ -1690,7 +1690,7 @@ const	struct	skill_type	skill_table	[MAX_SKILL]	=
         NULL,                   SLOT(401),      0,      12,
         "general purpose ammo", "!General Purpose Ammo!",	""
     },
- 
+
     {
         "high explosive",       { 53, 53, 53, 53 },	{ 0, 0, 0, 0 },
         spell_high_explosive,   TAR_CHAR_OFFENSIVE,     POS_FIGHTING,
@@ -1715,7 +1715,7 @@ const	struct	skill_type	skill_table	[MAX_SKILL]	=
         &gsn_dagger,            SLOT( 0),       0,      0,
         "",                     "!Dagger!",		""
     },
- 
+
     {
 	"flail",		{ 1,  1, 1,  1 },	{ 6, 3, 6, 4},
         spell_null,             TAR_IGNORE,             POS_FIGHTING,
@@ -1736,14 +1736,14 @@ const	struct	skill_type	skill_table	[MAX_SKILL]	=
         &gsn_polearm,           SLOT( 0),       0,      0,
         "",                     "!Polearm!",		""
     },
-    
+
     {
 	"shield block",		{ 1,  1, 1,  1 },	{ 6, 4, 6, 2},
 	spell_null,		TAR_IGNORE,		POS_FIGHTING,
 	&gsn_shield_block,	SLOT(0),	0,	0,
 	"",			"!Shield!",		""
     },
- 
+
     {
 	"spear",		{  1,  1,  1,  1 },	{ 4, 4, 4, 3},
         spell_null,             TAR_IGNORE,             POS_FIGHTING,
@@ -1787,7 +1787,7 @@ const	struct	skill_type	skill_table	[MAX_SKILL]	=
     },
 
     {
-	"dirt kicking",		{ 53, 53,  3,  3 },	{ 0, 0, 4, 4}, 
+	"dirt kicking",		{ 53, 53,  3,  3 },	{ 0, 0, 4, 4},
 	spell_null,		TAR_IGNORE,		POS_FIGHTING,
 	&gsn_dirt,		SLOT( 0),	0,	24,
 	"kicked dirt",		"You rub the dirt out of your eyes.",	""
@@ -1799,14 +1799,14 @@ const	struct	skill_type	skill_table	[MAX_SKILL]	=
         &gsn_disarm,            SLOT( 0),        0,     24,
         "",                     "!Disarm!",		""
     },
- 
+
     {
         "dodge",                { 20, 22,  1, 13 },     { 8, 8, 4, 6},
         spell_null,             TAR_IGNORE,             POS_FIGHTING,
         &gsn_dodge,             SLOT( 0),        0,     0,
         "",                     "!Dodge!",		""
     },
- 
+
     {
         "enhanced damage",      { 45, 30, 25,  1 },     { 10, 9, 5, 3},
         spell_null,             TAR_IGNORE,             POS_FIGHTING,
@@ -1872,7 +1872,7 @@ const	struct	skill_type	skill_table	[MAX_SKILL]	=
 
 /* non-combat skills */
 
-    { 
+    {
 	"fast healing",		{ 15, 9, 16,  6 },	{ 8, 5, 6, 4},
 	spell_null,		TAR_IGNORE,		POS_SLEEPING,
 	&gsn_fast_healing,	SLOT( 0),	0,	0,
@@ -1948,7 +1948,7 @@ const	struct	skill_type	skill_table	[MAX_SKILL]	=
 	&gsn_staves,		SLOT( 0),	0,	12,
 	"",			"!Staves!",		""
     },
-    
+
     {
 	"wands",		{  1,  1,  1,  1 },	{ 2, 3, 5, 8},
 	spell_null,		TAR_IGNORE,		POS_STANDING,
@@ -1981,7 +1981,7 @@ const   struct  group_type      group_table     [MAX_GROUP]     =
 	"cleric basics",	{ -1, 0, -1, -1 },
 	{ "mace" }
     },
-   
+
     {
 	"thief basics",		{ -1, -1, 0, -1 },
 	{ "dagger", "steal" }
@@ -2000,11 +2000,11 @@ const   struct  group_type      group_table     [MAX_GROUP]     =
 
     {
 	"cleric default",	{ -1, 40, -1, -1 },
-	{ "flail", "attack", "creation", "curative",  "benedictions", 
-	  "detection", "healing", "maladictions", "protective", "shield block", 
+	{ "flail", "attack", "creation", "curative",  "benedictions",
+	  "detection", "healing", "maladictions", "protective", "shield block",
 	  "transportation", "weather" }
     },
- 
+
     {
 	"thief default",	{ -1, -1, 40, -1 },
 	{ "mace", "sword", "backstab", "disarm", "dodge", "second attack",
@@ -2013,7 +2013,7 @@ const   struct  group_type      group_table     [MAX_GROUP]     =
 
     {
 	"warrior default",	{ -1, -1, -1, 40 },
-	{ "weaponsmaster", "shield block", "bash", "disarm", "enhanced damage", 
+	{ "weaponsmaster", "shield block", "bash", "disarm", "enhanced damage",
 	  "parry", "rescue", "third attack" }
     },
 
@@ -2024,7 +2024,7 @@ const   struct  group_type      group_table     [MAX_GROUP]     =
 
     {
 	"attack",		{ -1, 5, -1, 8 },
-	{ "demonfire", "dispel evil", "dispel good", "earthquake", 
+	{ "demonfire", "dispel evil", "dispel good", "earthquake",
 	  "flamestrike", "heat metal", "ray of truth" }
     },
 
@@ -2054,13 +2054,13 @@ const   struct  group_type      group_table     [MAX_GROUP]     =
     {
 	"curative",		{ -1, 4, -1, 8 },
 	{ "cure blindness", "cure disease", "cure poison" }
-    }, 
+    },
 
     {
 	"detection",		{ 4, 3, 6, -1 },
- 	{ "detect evil", "detect good", "detect hidden", "detect invis", 
-	  "detect magic", "detect poison", "farsight", "identify", 
-	  "know alignment", "locate object" } 
+ 	{ "detect evil", "detect good", "detect hidden", "detect invis",
+	  "detect magic", "detect poison", "farsight", "identify",
+	  "know alignment", "locate object" }
     },
 
     {
@@ -2074,7 +2074,7 @@ const   struct  group_type      group_table     [MAX_GROUP]     =
 	{ "enchant armor", "enchant weapon", "fireproof", "recharge" }
     },
 
-    { 
+    {
 	"enhancement",		{ 5, -1, 9, 9 },
 	{ "giant strength", "haste", "infravision", "refresh" }
     },
@@ -2084,9 +2084,9 @@ const   struct  group_type      group_table     [MAX_GROUP]     =
 	{ "cause critical", "cause light", "cause serious", "harm" }
     },
 
-    {   
+    {
 	"healing",		{ -1, 3, -1, 6 },
- 	{ "cure critical", "cure light", "cure serious", "heal", 
+ 	{ "cure critical", "cure light", "cure serious", "heal",
 	  "mass healing", "refresh" }
     },
 
@@ -2094,32 +2094,32 @@ const   struct  group_type      group_table     [MAX_GROUP]     =
 	"illusion",		{ 4, -1, 7, -1 },
 	{ "invis", "mass invis", "ventriloquate" }
     },
-  
+
     {
 	"maladictions",		{ 5, 5, 9, 9 },
-	{ "blindness", "change sex", "curse", "energy drain", "plague", 
+	{ "blindness", "change sex", "curse", "energy drain", "plague",
 	  "poison", "slow", "weaken" }
     },
 
-    { 
+    {
 	"protective",		{ 4, 4, 7, 8 },
 	{ "armor", "cancellation", "dispel magic", "fireproof",
-	  "protection evil", "protection good", "sanctuary", "shield", 
+	  "protection evil", "protection good", "sanctuary", "shield",
 	  "stone skin" }
     },
 
     {
 	"transportation",	{ 4, 4, 8, 9 },
-	{ "fly", "gate", "nexus", "pass door", "portal", "summon", "teleport", 
+	{ "fly", "gate", "nexus", "pass door", "portal", "summon", "teleport",
 	  "word of recall" }
     },
-   
+
     {
 	"weather",		{ 4, 4, 8, 8 },
 	{ "call lightning", "control weather", "faerie fire", "faerie fog",
 	  "lightning bolt" }
     }
-	
-   
+
+
 
 };

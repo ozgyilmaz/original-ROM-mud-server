@@ -14,7 +14,7 @@
  *  benefitting.  We hope that you share your changes too.  What goes      *
  *  around, comes around.                                                  *
  ***************************************************************************/
- 
+
 /***************************************************************************
 *	ROM 2.4 is copyright 1993-1998 Russ Taylor			   *
 *	ROM has been brought to you by the ROM consortium		   *
@@ -36,7 +36,7 @@
 #include <time.h>
 #include "merc.h"
 
-char *const distance[4]=
+const char * distance[4]=
 {
 "right here.", "nearby to the %s.", "not far %s.", "off in the distance %s."
 };
@@ -47,7 +47,7 @@ void scan_char           args((CHAR_DATA *victim, CHAR_DATA *ch,
                                sh_int depth, sh_int door));
 void do_scan(CHAR_DATA *ch, char *argument)
 {
-   extern char *const dir_name[];
+   extern const char * dir_name[];
    char arg1[MAX_INPUT_LENGTH], buf[MAX_INPUT_LENGTH];
    ROOM_INDEX_DATA *scan_room;
    EXIT_DATA *pExit;
@@ -79,7 +79,7 @@ void do_scan(CHAR_DATA *ch, char *argument)
    act("You peer intently $T.", ch, NULL, dir_name[door], TO_CHAR);
    act("$n peers intently $T.", ch, NULL, dir_name[door], TO_ROOM);
    sprintf(buf, "Looking %s you see:\n\r", dir_name[door]);
-                                                                                  
+
    scan_room = ch->in_room;
 
    for (depth = 1; depth < 4; depth++)
@@ -110,8 +110,7 @@ void scan_list(ROOM_INDEX_DATA *scan_room, CHAR_DATA *ch, sh_int depth,
 
 void scan_char(CHAR_DATA *victim, CHAR_DATA *ch, sh_int depth, sh_int door)
 {
-   extern char *const dir_name[];
-   extern char *const distance[];
+   extern const char * dir_name[];
    char buf[MAX_INPUT_LENGTH], buf2[MAX_INPUT_LENGTH];
 
    buf[0] = '\0';
@@ -121,7 +120,7 @@ void scan_char(CHAR_DATA *victim, CHAR_DATA *ch, sh_int depth, sh_int door)
    sprintf(buf2, distance[depth], dir_name[door]);
    strcat(buf, buf2);
    strcat(buf, "\n\r");
- 
+
    send_to_char(buf, ch);
    return;
 }

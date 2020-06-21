@@ -56,6 +56,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "merc.h"
 #include "interp.h"
@@ -159,7 +160,7 @@ int	socket		args( ( int domain, int type, int protocol ) );
 #endif
 
 #if	defined(linux)
-/* 
+/*
     Linux shouldn't need these. If you have a problem compiling, try
     uncommenting these functions.
 */
@@ -304,7 +305,7 @@ bool		    merc_down;		/* Shutdown			*/
 bool		    wizlock;		/* Game is wizlocked		*/
 bool		    newlock;		/* Game is newlocked		*/
 char		    str_boot_time[MAX_INPUT_LENGTH];
-time_t		    current_time;	/* time of this pulse */	
+time_t		    current_time;	/* time of this pulse */
 
 
 
@@ -712,7 +713,7 @@ void game_loop_unix( int control )
 	 */
 	for ( d = descriptor_list; d != NULL; d = d_next )
 	{
-	    d_next = d->next;   
+	    d_next = d->next;
 	    if ( FD_ISSET( d->descriptor, &exc_set ) )
 	    {
 		FD_CLR( d->descriptor, &in_set  );
@@ -862,7 +863,7 @@ void init_descriptor( int control )
     struct sockaddr_in sock;
     struct hostent *from;
     int desc;
-    int size;
+    socklen_t size;
 
     size = sizeof(sock);
     getsockname( control, (struct sockaddr *) &sock, &size );
@@ -892,7 +893,7 @@ void init_descriptor( int control )
     dnew->showstr_head	= NULL;
     dnew->showstr_point = NULL;
     dnew->outsize	= 2000;
-    dnew->outbuf	= alloc_mem( dnew->outsize );
+    dnew->outbuf	= (char *)alloc_mem( dnew->outsize );
 
     size = sizeof(sock);
     if ( getpeername( desc, (struct sockaddr *) &sock, &size ) < 0 )
@@ -919,7 +920,7 @@ void init_descriptor( int control )
 	    sizeof(sock.sin_addr), AF_INET );
 	dnew->host = str_dup( from ? from->h_name : buf );
     }
-	
+
     /*
      * Swiftest: I added the following to ban sites.  I don't
      * endorse banning of sites, but Copper has few descriptors now
@@ -931,7 +932,7 @@ void init_descriptor( int control )
     if ( check_ban(dnew->host,BAN_ALL))
     {
 	write_to_descriptor( desc,
-	    "Your site has been banned from this mud.\n\r", 0 );
+	    (char*)"Your site has been banned from this mud.\n\r", 0 );
 	close( desc );
 	free_descriptor(dnew);
 	return;
@@ -990,18 +991,18 @@ void close_socket( DESCRIPTOR_DATA *dclose )
 	if ( dclose->connected == CON_PLAYING && !merc_down)
 	{
 	    act( "$n has lost $s link.", ch, NULL, NULL, TO_ROOM );
-	    wiznet("Net death has claimed $N.",ch,NULL,WIZ_LINKS,0,0);
+	    wiznet((char*)"Net death has claimed $N.",ch,NULL,WIZ_LINKS,0,0);
 	    ch->desc = NULL;
 	}
 	else
 	{
-	    free_char(dclose->original ? dclose->original : 
+	    free_char(dclose->original ? dclose->original :
 		dclose->character );
 	}
     }
 
     if ( d_next == dclose )
-	d_next = d_next->next;   
+	d_next = d_next->next;
 
     if ( dclose == descriptor_list )
     {
@@ -1031,7 +1032,7 @@ void close_socket( DESCRIPTOR_DATA *dclose )
 
 bool read_from_descriptor( DESCRIPTOR_DATA *d )
 {
-    int iStart;
+    size_t iStart;
 
     /* Hold horses if pending command already. */
     if ( d->incomm[0] != '\0' )
@@ -1044,7 +1045,7 @@ bool read_from_descriptor( DESCRIPTOR_DATA *d )
 	sprintf( log_buf, "%s input overflow!", d->host );
 	log_string( log_buf );
 	write_to_descriptor( d->descriptor,
-	    "\n\r*** PUT A LID ON IT!!! ***\n\r", 0 );
+	    (char*)"\n\r*** PUT A LID ON IT!!! ***\n\r", 0 );
 	return FALSE;
     }
 
@@ -1070,7 +1071,7 @@ bool read_from_descriptor( DESCRIPTOR_DATA *d )
     {
 	int nRead;
 
-	nRead = read( d->descriptor, d->inbuf + iStart,
+	nRead = read( (int)d->descriptor, (void *)(d->inbuf + iStart),
 	    sizeof(d->inbuf) - 10 - iStart );
 	if ( nRead > 0 )
 	{
@@ -1128,7 +1129,7 @@ void read_from_buffer( DESCRIPTOR_DATA *d )
     {
 	if ( k >= MAX_INPUT_LENGTH - 2 )
 	{
-	    write_to_descriptor( d->descriptor, "Line too long.\n\r", 0 );
+	    write_to_descriptor( d->descriptor, (char*)"Line too long.\n\r", 0 );
 
 	    /* skip the rest of the line */
 	    for ( ; d->inbuf[i] != '\0'; i++ )
@@ -1171,7 +1172,7 @@ void read_from_buffer( DESCRIPTOR_DATA *d )
 	    {
 		sprintf( log_buf, "%s input spamming!", d->host );
 		log_string( log_buf );
-		wiznet("Spam spam spam $N spam spam spam spam spam!",
+		wiznet((char*)"Spam spam spam $N spam spam spam spam spam!",
 		       d->character,NULL,WIZ_SPAM,0,get_trust(d->character));
 		if (d->incomm[0] == '!')
 		    wiznet(d->inlast,d->character,NULL,WIZ_SPAM,0,
@@ -1183,7 +1184,7 @@ void read_from_buffer( DESCRIPTOR_DATA *d )
 		d->repeat = 0;
 /*
 		write_to_descriptor( d->descriptor,
-		    "\n\r*** PUT A LID ON IT!!! ***\n\r", 0 );
+		    (char*)"\n\r*** PUT A LID ON IT!!! ***\n\r", 0 );
 		strcpy( d->incomm, "quit" );
 */
 	    }
@@ -1236,12 +1237,12 @@ bool process_output( DESCRIPTOR_DATA *d, bool fPrompt )
             int percent;
             char wound[100];
 	    char buf[MAX_STRING_LENGTH];
- 
+
             if (victim->max_hit > 0)
                 percent = victim->hit * 100 / victim->max_hit;
             else
                 percent = -1;
- 
+
             if (percent >= 100)
                 sprintf(wound,"is in excellent condition.");
             else if (percent >= 90)
@@ -1258,8 +1259,8 @@ bool process_output( DESCRIPTOR_DATA *d, bool fPrompt )
                 sprintf(wound,"is in awful condition.");
             else
                 sprintf(wound,"is bleeding to death.");
- 
-            sprintf(buf,"%s %s \n\r", 
+
+            sprintf(buf,"%s %s \n\r",
 	            IS_NPC(victim) ? victim->short_descr : victim->name,wound);
 	    buf[0] = UPPER(buf[0]);
             write_to_buffer( d, buf, 0);
@@ -1326,7 +1327,7 @@ void bust_a_prompt( CHAR_DATA *ch )
     bool found;
     const char *dir_name[] = {"N","E","S","W","U","D"};
     int door;
- 
+
     point = buf;
     str = ch->prompt;
     if (str == NULL || str[0] == '\0')
@@ -1363,7 +1364,7 @@ void bust_a_prompt( CHAR_DATA *ch )
 		if ((pexit = ch->in_room->exit[door]) != NULL
 		&&  pexit ->u1.to_room != NULL
 		&&  (can_see_room(ch,pexit->u1.to_room)
-		||   (IS_AFFECTED(ch,AFF_INFRARED) 
+		||   (IS_AFFECTED(ch,AFF_INFRARED)
 		&&    !IS_AFFECTED(ch,AFF_BLIND)))
 		&&  !IS_SET(pexit->exit_info,EX_CLOSED))
 		{
@@ -1418,7 +1419,7 @@ void bust_a_prompt( CHAR_DATA *ch )
             i = buf2; break;
          case 'r' :
             if( ch->in_room != NULL )
-               sprintf( buf2, "%s", 
+               sprintf( buf2, "%s",
 		((!IS_NPC(ch) && IS_SET(ch->act,PLR_HOLYLIGHT)) ||
 		 (!IS_AFFECTED(ch,AFF_BLIND) && !room_is_dark( ch->in_room )))
 		? ch->in_room->name : "darkness");
@@ -1488,7 +1489,7 @@ void write_to_buffer( DESCRIPTOR_DATA *d, const char *txt, int length )
 	    close_socket(d);
 	    return;
  	}
-	outbuf      = alloc_mem( 2 * d->outsize );
+	outbuf      = (char *)alloc_mem( 2 * d->outsize );
 	strncpy( outbuf, d->outbuf, d->outtop );
 	free_mem( d->outbuf, d->outsize );
 	d->outbuf   = outbuf;
@@ -1515,7 +1516,7 @@ bool write_to_descriptor( int desc, char *txt, int length )
 {
     int iStart;
     int nWrite;
-    int nBlock;
+    size_t nBlock;
 
 #if defined(macintosh) || defined(MSDOS)
     if ( desc == 0 )
@@ -1528,9 +1529,9 @@ bool write_to_descriptor( int desc, char *txt, int length )
     for ( iStart = 0; iStart < length; iStart += nWrite )
     {
 	nBlock = UMIN( length - iStart, 4096 );
-	if ( ( nWrite = write( desc, txt + iStart, nBlock ) ) < 0 )
+	if ( ( nWrite = write( (int)desc, (void *)(txt + iStart), nBlock ) ) < 0 )
 	    { perror( "Write_to_descriptor" ); return FALSE; }
-    } 
+    }
 
     return TRUE;
 }
@@ -1603,7 +1604,7 @@ void nanny( DESCRIPTOR_DATA *d, char *argument )
 	}
 	else
 	{
-	    if ( wizlock && !IS_IMMORTAL(ch)) 
+	    if ( wizlock && !IS_IMMORTAL(ch))
 	    {
 		write_to_buffer( d, "The game is wizlocked.\n\r", 0 );
 		close_socket( d );
@@ -1636,7 +1637,7 @@ void nanny( DESCRIPTOR_DATA *d, char *argument )
 		close_socket(d);
 		return;
 	    }
-	
+
 	    sprintf( buf, "Did I get that right, %s (Y/N)? ", argument );
 	    write_to_buffer( d, buf, 0 );
 	    d->connected = CON_CONFIRM_NEW_NAME;
@@ -1655,7 +1656,7 @@ void nanny( DESCRIPTOR_DATA *d, char *argument )
 	    close_socket( d );
 	    return;
 	}
- 
+
 	write_to_buffer( d, echo_on_str, 0 );
 
 	if (check_playing(d,ch->name))
@@ -1670,18 +1671,18 @@ void nanny( DESCRIPTOR_DATA *d, char *argument )
 
 	if ( IS_IMMORTAL(ch) )
 	{
-	    do_function(ch, &do_help, "imotd" );
+	    do_function(ch, &do_help, (char*)"imotd" );
 	    d->connected = CON_READ_IMOTD;
  	}
 	else
 	{
-	    do_function(ch, &do_help, "motd" );
+	    do_function(ch, &do_help, (char*)"motd" );
 	    d->connected = CON_READ_MOTD;
 	}
 	break;
 
 /* RT code for breaking link */
- 
+
     case CON_BREAK_CONNECT:
 	switch( *argument )
 	{
@@ -1813,7 +1814,7 @@ void nanny( DESCRIPTOR_DATA *d, char *argument )
 	{
 	    argument = one_argument(argument,arg);
 	    if (argument[0] == '\0')
-		do_function(ch, &do_help, "race help");
+		do_function(ch, &do_help, (char*)"race help");
 	    else
 		do_function(ch, &do_help, argument);
             write_to_buffer(d,
@@ -1865,15 +1866,15 @@ void nanny( DESCRIPTOR_DATA *d, char *argument )
         write_to_buffer( d, "What is your sex (M/F)? ", 0 );
         d->connected = CON_GET_NEW_SEX;
         break;
-        
+
 
     case CON_GET_NEW_SEX:
 	switch ( argument[0] )
 	{
-	case 'm': case 'M': ch->sex = SEX_MALE;    
+	case 'm': case 'M': ch->sex = SEX_MALE;
 			    ch->pcdata->true_sex = SEX_MALE;
 			    break;
-	case 'f': case 'F': ch->sex = SEX_FEMALE; 
+	case 'f': case 'F': ch->sex = SEX_FEMALE;
 			    ch->pcdata->true_sex = SEX_FEMALE;
 			    break;
 	default:
@@ -1903,11 +1904,11 @@ void nanny( DESCRIPTOR_DATA *d, char *argument )
 	    return;
 	}
 
-        ch->class = iClass;
+        ch->iclass = iClass;
 
 	sprintf( log_buf, "%s@%s new player.", ch->name, d->host );
 	log_string( log_buf );
-	wiznet("Newbie alert!  $N sighted.",ch,NULL,WIZ_NEWBIE,0,0);
+	wiznet((char*)"Newbie alert!  $N sighted.",ch,NULL,WIZ_NEWBIE,0,0);
         wiznet(log_buf,NULL,NULL,WIZ_SITES,0,get_trust(ch));
 
 	write_to_buffer( d, "\n\r", 2 );
@@ -1931,7 +1932,7 @@ case CON_GET_ALIGNMENT:
 	write_to_buffer(d,"\n\r",0);
 
         group_add(ch,"rom basics",FALSE);
-        group_add(ch,class_table[ch->class].base_group,FALSE);
+        group_add(ch,class_table[ch->iclass].base_group,FALSE);
         ch->pcdata->learned[gsn_recall] = 50;
 	write_to_buffer(d,"Do you wish to customize this character?\n\r",0);
 	write_to_buffer(d,"Customization takes time, but allows a wider range of skills and abilities.\n\r",0);
@@ -1943,18 +1944,18 @@ case CON_DEFAULT_CHOICE:
 	write_to_buffer(d,"\n\r",2);
         switch ( argument[0] )
         {
-        case 'y': case 'Y': 
+        case 'y': case 'Y':
 	    ch->gen_data = new_gen_data();
 	    ch->gen_data->points_chosen = ch->pcdata->points;
-	    do_function(ch, &do_help, "group header");
+	    do_function(ch, &do_help, (char*)"group header");
 	    list_group_costs(ch);
 	    write_to_buffer(d,"You already have the following skills:\n\r",0);
-	    do_function(ch, &do_skills, "");
-	    do_function(ch, &do_help, "menu choice");
+	    do_function(ch, &do_skills, (char*)"");
+	    do_function(ch, &do_help, (char*)"menu choice");
 	    d->connected = CON_GEN_GROUPS;
 	    break;
-        case 'n': case 'N': 
-	    group_add(ch,class_table[ch->class].default_group,TRUE);
+        case 'n': case 'N':
+	    group_add(ch,class_table[ch->iclass].default_group,TRUE);
             write_to_buffer( d, "\n\r", 2 );
 	    write_to_buffer(d,
 		"Please pick a weapon from the following choices:\n\r",0);
@@ -1996,7 +1997,7 @@ case CON_DEFAULT_CHOICE:
 
 	ch->pcdata->learned[*weapon_table[weapon].gsn] = 40;
 	write_to_buffer(d,"\n\r",2);
-	do_function(ch, &do_help, "motd");
+	do_function(ch, &do_help, (char*)"motd");
 	d->connected = CON_READ_MOTD;
 	break;
 
@@ -2050,12 +2051,12 @@ case CON_DEFAULT_CHOICE:
         "Choices are: list,learned,premise,add,drop,info,help, and done.\n\r"
         ,ch);
 
-        do_function(ch, &do_help, "menu choice");
+        do_function(ch, &do_help, (char*)"menu choice");
         break;
 
     case CON_READ_IMOTD:
 	write_to_buffer(d,"\n\r",2);
-        do_function(ch, &do_help, "motd");
+        do_function(ch, &do_help, (char*)"motd");
         d->connected = CON_READ_MOTD;
 	break;
 
@@ -2068,7 +2069,7 @@ case CON_DEFAULT_CHOICE:
                 "Type 'password null <new password>' to fix.\n\r",0);
         }
 
-	write_to_buffer( d, 
+	write_to_buffer( d,
     "\n\rWelcome to ROM 2.4.  Please do not feed the mobiles.\n\r",
 	    0 );
 	ch->next	= char_list;
@@ -2079,7 +2080,7 @@ case CON_DEFAULT_CHOICE:
 	if ( ch->level == 0 )
 	{
 
-	    ch->perm_stat[class_table[ch->class].attr_prime] += 3;
+	    ch->perm_stat[class_table[ch->iclass].attr_prime] += 3;
 
 	    ch->level	= 1;
 	    ch->exp	= exp_per_level(ch,ch->pcdata->points);
@@ -2089,16 +2090,16 @@ case CON_DEFAULT_CHOICE:
 	    ch->train	 = 3;
 	    ch->practice = 5;
 	    sprintf( buf, "the %s",
-		title_table [ch->class] [ch->level]
+		title_table [ch->iclass] [ch->level]
 		[ch->sex == SEX_FEMALE ? 1 : 0] );
 	    set_title( ch, buf );
 
-	    do_function (ch, &do_outfit,"");
+	    do_function (ch, &do_outfit,(char*)"");
 	    obj_to_char(create_object(get_obj_index(OBJ_VNUM_MAP),0),ch);
 
 	    char_to_room( ch, get_room_index( ROOM_VNUM_SCHOOL ) );
 	    send_to_char("\n\r",ch);
-	    do_function(ch, &do_help, "newbie info");
+	    do_function(ch, &do_help, (char*)"newbie info");
 	    send_to_char("\n\r",ch);
 	}
 	else if ( ch->in_room != NULL )
@@ -2115,9 +2116,9 @@ case CON_DEFAULT_CHOICE:
 	}
 
 	act( "$n has entered the game.", ch, NULL, NULL, TO_ROOM );
-	do_function(ch, &do_look, "auto" );
+	do_function(ch, &do_look, (char*)"auto" );
 
-	wiznet("$N has left real life behind.",ch,NULL,
+	wiznet((char*)"$N has left real life behind.",ch,NULL,
 		WIZ_LOGINS,WIZ_SITES,get_trust(ch));
 
 	if (ch->pet != NULL)
@@ -2126,7 +2127,7 @@ case CON_DEFAULT_CHOICE:
 	    act("$n has entered the game.",ch->pet,NULL,NULL,TO_ROOM);
 	}
 
-	do_function(ch, &do_unread, "");
+	do_function(ch, &do_unread, (char*)"");
 	break;
     }
 
@@ -2146,7 +2147,7 @@ bool check_parse_name( char *name )
      * Reserved words.
      */
     if (is_exact_name(name,
-	"all auto immortal self someone something the you loner"))
+	(char*)"all auto immortal self someone something the you loner"))
     {
 	return FALSE;
     }
@@ -2158,7 +2159,7 @@ bool check_parse_name( char *name )
 	&&  !str_cmp(name,clan_table[clan].name))
 	   return FALSE;
     }
-	
+
     if (str_cmp(capitalize(name),"Alander") && (!str_prefix("Alan",name)
     || !str_suffix("Alander",name)))
 	return FALSE;
@@ -2166,7 +2167,7 @@ bool check_parse_name( char *name )
     /*
      * Length restrictions.
      */
-     
+
     if ( strlen(name) <  2 )
 	return FALSE;
 
@@ -2187,7 +2188,7 @@ bool check_parse_name( char *name )
     {
 	char *pc;
 	bool fIll,adjcaps = FALSE,cleancaps = FALSE;
- 	int total_caps = 0;
+ 	size_t total_caps = 0;
 
 	fIll = TRUE;
 	for ( pc = name; *pc != '\0'; pc++ )
@@ -2271,7 +2272,7 @@ bool check_reconnect( DESCRIPTOR_DATA *d, char *name, bool fConn )
 
 		sprintf( log_buf, "%s@%s reconnected.", ch->name, d->host );
 		log_string( log_buf );
-		wiznet("$N groks the fullness of $S link.",
+		wiznet((char*)"$N groks the fullness of $S link.",
 		    ch,NULL,WIZ_LINKS,0,0);
 		d->connected = CON_PLAYING;
 	    }
@@ -2317,7 +2318,7 @@ void stop_idling( CHAR_DATA *ch )
     if ( ch == NULL
     ||   ch->desc == NULL
     ||   ch->desc->connected != CON_PLAYING
-    ||   ch->was_in_room == NULL 
+    ||   ch->was_in_room == NULL
     ||   ch->in_room != get_room_index(ROOM_VNUM_LIMBO))
 	return;
 
@@ -2354,14 +2355,14 @@ void page_to_char( const char *txt, CHAR_DATA *ch )
 	send_to_char(txt,ch);
 	return;
     }
-	
+
 #if defined(macintosh)
 	send_to_char(txt,ch);
 #else
-    ch->desc->showstr_head = alloc_mem(strlen(txt) + 1);
+    ch->desc->showstr_head = (char *)alloc_mem(strlen(txt) + 1);
     strcpy(ch->desc->showstr_head,txt);
     ch->desc->showstr_point = ch->desc->showstr_head;
-    show_string(ch->desc,"");
+    show_string(ch->desc,(char*)"");
 #endif
 }
 
@@ -2419,7 +2420,7 @@ void show_string(struct descriptor_data *d, char *input)
     }
     return;
 }
-	
+
 
 /* quick sex fixer */
 void fix_sex(CHAR_DATA *ch)
@@ -2428,13 +2429,13 @@ void fix_sex(CHAR_DATA *ch)
     	ch->sex = IS_NPC(ch) ? 0 : ch->pcdata->true_sex;
 }
 
-void act_new( const char *format, CHAR_DATA *ch, const void *arg1, 
+void act_new( const char *format, CHAR_DATA *ch, const void *arg1,
 	      const void *arg2, int type, int min_pos)
 {
-    static char * const he_she  [] = { "it",  "he",  "she" };
-    static char * const him_her [] = { "it",  "him", "her" };
-    static char * const his_her [] = { "its", "his", "her" };
- 
+    static const char * he_she  [] = { "it",  "he",  "she" };
+    static const char * him_her [] = { "it",  "him", "her" };
+    static const char * his_her [] = { "its", "his", "her" };
+
     char buf[MAX_STRING_LENGTH];
     char fname[MAX_INPUT_LENGTH];
     CHAR_DATA *to;
@@ -2444,7 +2445,7 @@ void act_new( const char *format, CHAR_DATA *ch, const void *arg1,
     const char *str;
     const char *i;
     char *point;
- 
+
     /*
      * Discard null and zero-length messages.
      */
@@ -2469,12 +2470,12 @@ void act_new( const char *format, CHAR_DATA *ch, const void *arg1,
 
         to = vch->in_room->people;
     }
- 
+
     for ( ; to != NULL; to = to->next_in_room )
     {
         if ( to->desc == NULL || to->position < min_pos )
             continue;
- 
+
         if ( (type == TO_CHAR) && to != ch )
             continue;
         if ( type == TO_VICT && ( to != vch || to == ch ) )
@@ -2483,7 +2484,7 @@ void act_new( const char *format, CHAR_DATA *ch, const void *arg1,
             continue;
         if ( type == TO_NOTVICT && (to == ch || to == vch) )
             continue;
- 
+
         point   = buf;
         str     = format;
         while ( *str != '\0' )
@@ -2494,7 +2495,7 @@ void act_new( const char *format, CHAR_DATA *ch, const void *arg1,
                 continue;
             }
             ++str;
- 
+
             if ( arg2 == NULL && *str >= 'A' && *str <= 'Z' )
             {
                 bug( "Act: missing arg2 for code %d.", *str );
@@ -2517,19 +2518,19 @@ void act_new( const char *format, CHAR_DATA *ch, const void *arg1,
                 case 'M': i = him_her [URANGE(0, vch ->sex, 2)];        break;
                 case 's': i = his_her [URANGE(0, ch  ->sex, 2)];        break;
                 case 'S': i = his_her [URANGE(0, vch ->sex, 2)];        break;
- 
+
                 case 'p':
                     i = can_see_obj( to, obj1 )
                             ? obj1->short_descr
                             : "something";
                     break;
- 
+
                 case 'P':
                     i = can_see_obj( to, obj2 )
                             ? obj2->short_descr
                             : "something";
                     break;
- 
+
                 case 'd':
                     if ( arg2 == NULL || ((char *) arg2)[0] == '\0' )
                     {
@@ -2543,18 +2544,18 @@ void act_new( const char *format, CHAR_DATA *ch, const void *arg1,
                     break;
                 }
             }
- 
+
             ++str;
             while ( ( *point = *i ) != '\0' )
                 ++point, ++i;
         }
- 
+
         *point++ = '\n';
         *point++ = '\r';
         buf[0]   = UPPER(buf[0]);
         write_to_buffer( to->desc, buf, point - buf );
     }
- 
+
     return;
 }
 

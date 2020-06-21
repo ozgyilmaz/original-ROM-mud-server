@@ -37,7 +37,7 @@
 #include "merc.h"
 #include "interp.h"
 
-char *	const	dir_name	[]		=
+const char *	dir_name	[]		=
 {
     "north", "east", "south", "west", "up", "down"
 };
@@ -78,7 +78,7 @@ void move_char( CHAR_DATA *ch, int door, bool follow )
 
     in_room = ch->in_room;
     if ( ( pexit   = in_room->exit[door] ) == NULL
-    ||   ( to_room = pexit->u1.to_room   ) == NULL 
+    ||   ( to_room = pexit->u1.to_room   ) == NULL
     ||	 !can_see_room(ch,pexit->u1.to_room))
     {
 	send_to_char( "Alas, you cannot go that way.\n\r", ch );
@@ -114,9 +114,9 @@ void move_char( CHAR_DATA *ch, int door, bool follow )
 
 	for ( iClass = 0; iClass < MAX_CLASS; iClass++ )
 	{
-	    for ( iGuild = 0; iGuild < MAX_GUILD; iGuild ++)	
+	    for ( iGuild = 0; iGuild < MAX_GUILD; iGuild ++)
 	    {
-	    	if ( iClass != ch->class
+	    	if ( iClass != ch->iclass
 	    	&&   to_room->vnum == class_table[iClass].guild[iGuild] )
 	    	{
 		    send_to_char( "You aren't allowed in there.\n\r", ch );
@@ -199,7 +199,7 @@ void move_char( CHAR_DATA *ch, int door, bool follow )
     &&   ch->invis_level < LEVEL_HERO)
 	act( "$n has arrived.", ch, NULL, NULL, TO_ROOM );
 
-    do_function(ch, &do_look, "auto" );
+    do_function(ch, &do_look, (char*)"auto" );
 
     if (in_room == to_room) /* no circular follows */
 	return;
@@ -208,11 +208,11 @@ void move_char( CHAR_DATA *ch, int door, bool follow )
     {
 	fch_next = fch->next_in_room;
 
-	if ( fch->master == ch && IS_AFFECTED(fch,AFF_CHARM) 
+	if ( fch->master == ch && IS_AFFECTED(fch,AFF_CHARM)
 	&&   fch->position < POS_STANDING)
-	    do_function(fch, &do_stand, "");
+	    do_function(fch, &do_stand, (char*)"");
 
-	if ( fch->master == ch && fch->position == POS_STANDING 
+	if ( fch->master == ch && fch->position == POS_STANDING
 	&&   can_see_room(fch,to_room))
 	{
 
@@ -778,7 +778,7 @@ void do_pick( CHAR_DATA *ch, char *argument )
 	if (obj->item_type == ITEM_PORTAL)
 	{
 	    if (!IS_SET(obj->value[1],EX_ISDOOR))
-	    {	
+	    {
 		send_to_char("You can't do that.\n\r",ch);
 		return;
 	    }
@@ -808,10 +808,10 @@ void do_pick( CHAR_DATA *ch, char *argument )
 	    return;
 	}
 
-	    
 
 
-	
+
+
 	/* 'pick object' */
 	if ( obj->item_type != ITEM_CONTAINER )
 	    { send_to_char( "That's not a container.\n\r", ch ); return; }
@@ -901,13 +901,13 @@ void do_stand( CHAR_DATA *ch, char *argument )
 	}
  	ch->on = obj;
     }
-    
+
     switch ( ch->position )
     {
     case POS_SLEEPING:
 	if ( IS_AFFECTED(ch, AFF_SLEEP) )
 	    { send_to_char( "You can't wake up!\n\r", ch ); return; }
-	
+
 	if (obj == NULL)
 	{
 	    send_to_char( "You wake and stand up.\n\r", ch );
@@ -924,13 +924,13 @@ void do_stand( CHAR_DATA *ch, char *argument )
 	    act_new("You wake and stand on $p.",ch,obj,NULL,TO_CHAR,POS_DEAD);
 	    act("$n wakes and stands on $p.",ch,obj,NULL,TO_ROOM);
 	}
-	else 
+	else
 	{
 	    act_new("You wake and stand in $p.",ch,obj,NULL,TO_CHAR,POS_DEAD);
 	    act("$n wakes and stands in $p.",ch,obj,NULL,TO_ROOM);
 	}
 	ch->position = POS_STANDING;
-	do_function(ch, &do_look, "auto");
+	do_function(ch, &do_look, (char*)"auto");
 	break;
 
     case POS_RESTING: case POS_SITTING:
@@ -1010,7 +1010,7 @@ void do_rest( CHAR_DATA *ch, char *argument )
 	    act_new("There's no more room on $p.",ch,obj,NULL,TO_CHAR,POS_DEAD);
 	    return;
     	}
-	
+
 	ch->on = obj;
     }
 
@@ -1129,7 +1129,7 @@ void do_sit (CHAR_DATA *ch, char *argument )
     }
     else obj = ch->on;
 
-    if (obj != NULL)                                                              
+    if (obj != NULL)
     {
 	if (obj->item_type != ITEM_FURNITURE
 	||  (!IS_SET(obj->value[2],SIT_ON)
@@ -1239,7 +1239,7 @@ void do_sleep( CHAR_DATA *ch, char *argument )
 
     case POS_RESTING:
     case POS_SITTING:
-    case POS_STANDING: 
+    case POS_STANDING:
 	if (argument[0] == '\0' && ch->on == NULL)
 	{
 	    send_to_char( "You go to sleep.\n\r", ch );
@@ -1259,7 +1259,7 @@ void do_sleep( CHAR_DATA *ch, char *argument )
 		return;
 	    }
 	    if (obj->item_type != ITEM_FURNITURE
-	    ||  (!IS_SET(obj->value[2],SLEEP_ON) 
+	    ||  (!IS_SET(obj->value[2],SLEEP_ON)
 	    &&   !IS_SET(obj->value[2],SLEEP_IN)
 	    &&	 !IS_SET(obj->value[2],SLEEP_AT)))
 	    {
@@ -1311,7 +1311,7 @@ void do_wake( CHAR_DATA *ch, char *argument )
 
     one_argument( argument, arg );
     if ( arg[0] == '\0' )
-	{ do_function(ch, &do_stand, ""); return; }
+	{ do_function(ch, &do_stand, (char*)""); return; }
 
     if ( !IS_AWAKE(ch) )
 	{ send_to_char( "You are asleep yourself!\n\r",       ch ); return; }
@@ -1326,7 +1326,7 @@ void do_wake( CHAR_DATA *ch, char *argument )
 	{ act( "You can't wake $M!",   ch, NULL, victim, TO_CHAR );  return; }
 
     act_new( "$n wakes you.", ch, NULL, victim, TO_VICT,POS_SLEEPING );
-    do_function(ch, &do_stand, "");
+    do_function(ch, &do_stand, (char*)"");
     return;
 }
 
@@ -1347,7 +1347,7 @@ void do_sneak( CHAR_DATA *ch, char *argument )
 	check_improve(ch,gsn_sneak,TRUE,3);
 	af.where     = TO_AFFECTS;
 	af.type      = gsn_sneak;
-	af.level     = ch->level; 
+	af.level     = ch->level;
 	af.duration  = ch->level;
 	af.location  = APPLY_NONE;
 	af.modifier  = 0;
@@ -1410,7 +1410,7 @@ void do_recall( CHAR_DATA *ch, char *argument )
 	send_to_char("Only players can recall.\n\r",ch);
 	return;
     }
-  
+
     act( "$n prays for transportation!", ch, 0, 0, TO_ROOM );
 
     if ( ( location = get_room_index( ROOM_VNUM_TEMPLE ) ) == NULL )
@@ -1450,7 +1450,7 @@ void do_recall( CHAR_DATA *ch, char *argument )
 	sprintf( buf, "You recall from combat!  You lose %d exps.\n\r", lose );
 	send_to_char( buf, ch );
 	stop_fighting( ch, TRUE );
-	
+
     }
 
     ch->move /= 2;
@@ -1458,10 +1458,10 @@ void do_recall( CHAR_DATA *ch, char *argument )
     char_from_room( ch );
     char_to_room( ch, location );
     act( "$n appears in the room.", ch, NULL, NULL, TO_ROOM );
-    do_function(ch, &do_look, "auto" );
-    
+    do_function(ch, &do_look, (char*)"auto" );
+
     if (ch->pet != NULL)
-	do_function(ch->pet, &do_recall, "");
+	do_function(ch->pet, &do_recall, (char*)"");
 
     return;
 }
@@ -1473,7 +1473,7 @@ void do_train( CHAR_DATA *ch, char *argument )
     char buf[MAX_STRING_LENGTH];
     CHAR_DATA *mob;
     sh_int stat = - 1;
-    char *pOutput = NULL;
+    const char *pOutput = NULL;
     int cost;
 
     if ( IS_NPC(ch) )
@@ -1498,14 +1498,14 @@ void do_train( CHAR_DATA *ch, char *argument )
     {
 	sprintf( buf, "You have %d training sessions.\n\r", ch->train );
 	send_to_char( buf, ch );
-	argument = "foo";
+	argument = (char*)"foo";
     }
 
     cost = 1;
 
     if ( !str_cmp( argument, "str" ) )
     {
-	if ( class_table[ch->class].attr_prime == STAT_STR )
+	if ( class_table[ch->iclass].attr_prime == STAT_STR )
 	    cost    = 1;
 	stat        = STAT_STR;
 	pOutput     = "strength";
@@ -1513,7 +1513,7 @@ void do_train( CHAR_DATA *ch, char *argument )
 
     else if ( !str_cmp( argument, "int" ) )
     {
-	if ( class_table[ch->class].attr_prime == STAT_INT )
+	if ( class_table[ch->iclass].attr_prime == STAT_INT )
 	    cost    = 1;
 	stat	    = STAT_INT;
 	pOutput     = "intelligence";
@@ -1521,7 +1521,7 @@ void do_train( CHAR_DATA *ch, char *argument )
 
     else if ( !str_cmp( argument, "wis" ) )
     {
-	if ( class_table[ch->class].attr_prime == STAT_WIS )
+	if ( class_table[ch->iclass].attr_prime == STAT_WIS )
 	    cost    = 1;
 	stat	    = STAT_WIS;
 	pOutput     = "wisdom";
@@ -1529,7 +1529,7 @@ void do_train( CHAR_DATA *ch, char *argument )
 
     else if ( !str_cmp( argument, "dex" ) )
     {
-	if ( class_table[ch->class].attr_prime == STAT_DEX )
+	if ( class_table[ch->iclass].attr_prime == STAT_DEX )
 	    cost    = 1;
 	stat  	    = STAT_DEX;
 	pOutput     = "dexterity";
@@ -1537,7 +1537,7 @@ void do_train( CHAR_DATA *ch, char *argument )
 
     else if ( !str_cmp( argument, "con" ) )
     {
-	if ( class_table[ch->class].attr_prime == STAT_CON )
+	if ( class_table[ch->iclass].attr_prime == STAT_CON )
 	    cost    = 1;
 	stat	    = STAT_CON;
 	pOutput     = "constitution";
@@ -1552,15 +1552,15 @@ void do_train( CHAR_DATA *ch, char *argument )
     else
     {
 	strcpy( buf, "You can train:" );
-	if ( ch->perm_stat[STAT_STR] < get_max_train(ch,STAT_STR)) 
+	if ( ch->perm_stat[STAT_STR] < get_max_train(ch,STAT_STR))
 	    strcat( buf, " str" );
-	if ( ch->perm_stat[STAT_INT] < get_max_train(ch,STAT_INT))  
+	if ( ch->perm_stat[STAT_INT] < get_max_train(ch,STAT_INT))
 	    strcat( buf, " int" );
-	if ( ch->perm_stat[STAT_WIS] < get_max_train(ch,STAT_WIS)) 
+	if ( ch->perm_stat[STAT_WIS] < get_max_train(ch,STAT_WIS))
 	    strcat( buf, " wis" );
-	if ( ch->perm_stat[STAT_DEX] < get_max_train(ch,STAT_DEX))  
+	if ( ch->perm_stat[STAT_DEX] < get_max_train(ch,STAT_DEX))
 	    strcat( buf, " dex" );
-	if ( ch->perm_stat[STAT_CON] < get_max_train(ch,STAT_CON))  
+	if ( ch->perm_stat[STAT_CON] < get_max_train(ch,STAT_CON))
 	    strcat( buf, " con" );
 	strcat( buf, " hp mana");
 
@@ -1592,7 +1592,7 @@ void do_train( CHAR_DATA *ch, char *argument )
        	    send_to_char( "You don't have enough training sessions.\n\r", ch );
             return;
         }
- 
+
 	ch->train -= cost;
         ch->pcdata->perm_hit += 10;
         ch->max_hit += 10;
@@ -1601,7 +1601,7 @@ void do_train( CHAR_DATA *ch, char *argument )
         act( "$n's durability increases!",ch,NULL,NULL,TO_ROOM);
         return;
     }
- 
+
     if (!str_cmp("mana",argument))
     {
         if ( cost > ch->train )
@@ -1632,7 +1632,7 @@ void do_train( CHAR_DATA *ch, char *argument )
     }
 
     ch->train		-= cost;
-  
+
     ch->perm_stat[stat]		+= 1;
     act( "Your $T increases!", ch, NULL, pOutput, TO_CHAR );
     act( "$n's $T increases!", ch, NULL, pOutput, TO_ROOM );

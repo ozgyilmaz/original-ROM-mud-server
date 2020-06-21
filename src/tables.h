@@ -14,7 +14,7 @@
  *  benefitting.  We hope that you share your changes too.  What goes	   *
  *  around, comes around.						   *
  ***************************************************************************/
- 
+
 /***************************************************************************
 *	ROM 2.4 is copyright 1993-1998 Russ Taylor			   *
 *	ROM has been brought to you by the ROM consortium		   *
@@ -24,6 +24,37 @@
 *	By using this code, you have agreed to follow the terms of the	   *
 *	ROM license, in the file Rom24/doc/rom.license			   *
 ***************************************************************************/
+
+struct flag_type
+{
+    const char *name;
+    int bit;
+    bool settable;
+};
+
+struct clan_type
+{
+    const char 	*name;
+    const char 	*who_name;
+    sh_int 	hall;
+    bool	independent; /* true for loners */
+};
+
+struct position_type
+{
+    const char *name;
+    const char *short_name;
+};
+
+struct sex_type
+{
+    const char *name;
+};
+
+struct size_type
+{
+    const char *name;
+};
 
 /* game tables */
 extern	const	struct	clan_type	clan_table[MAX_CLAN];
@@ -47,35 +78,3 @@ extern	const	struct	flag_type	container_flags[];
 extern	const	struct	flag_type	portal_flags[];
 extern	const	struct	flag_type	room_flags[];
 extern	const	struct	flag_type	exit_flags[];
-
-struct flag_type
-{
-    char *name;
-    int bit;
-    bool settable;
-};
-
-struct clan_type
-{
-    char 	*name;
-    char 	*who_name;
-    sh_int 	hall;
-    bool	independent; /* true for loners */
-};
-
-struct position_type
-{
-    char *name;
-    char *short_name;
-};
-
-struct sex_type
-{
-    char *name;
-};
-
-struct size_type
-{
-    char *name;
-};
-

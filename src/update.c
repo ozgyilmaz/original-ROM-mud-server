@@ -66,19 +66,19 @@ void advance_level( CHAR_DATA *ch, bool hide )
     int add_move;
     int add_prac;
 
-    ch->pcdata->last_level = 
+    ch->pcdata->last_level =
 	( ch->played + (int) (current_time - ch->logon) ) / 3600;
 
     sprintf( buf, "the %s",
-	title_table [ch->class] [ch->level] [ch->sex == SEX_FEMALE ? 1 : 0] );
+	title_table [ch->iclass] [ch->level] [ch->sex == SEX_FEMALE ? 1 : 0] );
     set_title( ch, buf );
 
     add_hp	= con_app[get_curr_stat(ch,STAT_CON)].hitp + number_range(
-		    class_table[ch->class].hp_min,
-		    class_table[ch->class].hp_max );
+		    class_table[ch->iclass].hp_min,
+		    class_table[ch->iclass].hp_max );
     add_mana 	= number_range(2,(2*get_curr_stat(ch,STAT_INT)
 				  + get_curr_stat(ch,STAT_WIS))/5);
-    if (!class_table[ch->class].fMana)
+    if (!class_table[ch->iclass].fMana)
 	add_mana /= 2;
     add_move	= number_range( 1, (get_curr_stat(ch,STAT_CON)
 				  + get_curr_stat(ch,STAT_DEX))/6 );
@@ -111,7 +111,7 @@ void advance_level( CHAR_DATA *ch, bool hide )
 	send_to_char( buf, ch );
     }
     return;
-}   
+}
 
 
 
@@ -123,7 +123,7 @@ void gain_exp( CHAR_DATA *ch, int gain )
 	return;
 
     ch->exp = UMAX( exp_per_level(ch,ch->pcdata->points), ch->exp + gain );
-    while ( ch->level < LEVEL_HERO && ch->exp >= 
+    while ( ch->level < LEVEL_HERO && ch->exp >=
 	exp_per_level(ch,ch->pcdata->points) * (ch->level+1) )
     {
 	send_to_char( "You raise a level!!  ", ch );
@@ -166,12 +166,12 @@ int hit_gain( CHAR_DATA *ch )
 	    case POS_FIGHTING:	gain /= 3;		 	break;
  	}
 
-	
+
     }
     else
     {
-	gain = UMAX(3,get_curr_stat(ch,STAT_CON) - 3 + ch->level/2); 
-	gain += class_table[ch->class].hp_max - 10;
+	gain = UMAX(3,get_curr_stat(ch,STAT_CON) - 3 + ch->level/2);
+	gain += class_table[ch->iclass].hp_max - 10;
  	number = number_percent();
 	if (number < get_skill(ch,gsn_fast_healing))
 	{
@@ -197,7 +197,7 @@ int hit_gain( CHAR_DATA *ch )
     }
 
     gain = gain * ch->in_room->heal_rate / 100;
-    
+
     if (ch->on != NULL && ch->on->item_type == ITEM_FURNITURE)
 	gain = gain * ch->on->value[3] / 100;
 
@@ -236,7 +236,7 @@ int mana_gain( CHAR_DATA *ch )
     }
     else
     {
-	gain = (get_curr_stat(ch,STAT_WIS) 
+	gain = (get_curr_stat(ch,STAT_WIS)
 	      + get_curr_stat(ch,STAT_INT) + ch->level) / 2;
 	number = number_percent();
 	if (number < get_skill(ch,gsn_meditation))
@@ -245,7 +245,7 @@ int mana_gain( CHAR_DATA *ch )
 	    if (ch->mana < ch->max_mana)
 	        check_improve(ch,gsn_meditation,TRUE,8);
 	}
-	if (!class_table[ch->class].fMana)
+	if (!class_table[ch->iclass].fMana)
 	    gain /= 2;
 
 	switch ( ch->position )
@@ -402,7 +402,7 @@ void mobile_update( void )
 		ch->gold += ch->pIndexData->wealth * number_range(1,20)/5000000;
 		ch->silver += ch->pIndexData->wealth * number_range(1,20)/50000;
 	    }
-	 
+
 
 	/* That's all for sleeping / busy monster, and empty zones */
 	if ( ch->position != POS_STANDING )
@@ -438,7 +438,7 @@ void mobile_update( void )
 	}
 
 	/* Wander */
-	if ( !IS_SET(ch->act, ACT_SENTINEL) 
+	if ( !IS_SET(ch->act, ACT_SENTINEL)
 	&& number_bits(3) == 0
 	&& ( door = number_bits( 5 ) ) <= 5
 	&& ( pexit = ch->in_room->exit[door] ) != NULL
@@ -446,9 +446,9 @@ void mobile_update( void )
 	&&   !IS_SET(pexit->exit_info, EX_CLOSED)
 	&&   !IS_SET(pexit->u1.to_room->room_flags, ROOM_NO_MOB)
 	&& ( !IS_SET(ch->act, ACT_STAY_AREA)
-	||   pexit->u1.to_room->area == ch->in_room->area ) 
+	||   pexit->u1.to_room->area == ch->in_room->area )
 	&& ( !IS_SET(ch->act, ACT_OUTDOORS)
-	||   !IS_SET(pexit->u1.to_room->room_flags,ROOM_INDOORS)) 
+	||   !IS_SET(pexit->u1.to_room->room_flags,ROOM_INDOORS))
 	&& ( !IS_SET(ch->act, ACT_INDOORS)
 	||   IS_SET(pexit->u1.to_room->room_flags,ROOM_INDOORS)))
 	{
@@ -530,7 +530,7 @@ void weather_update( void )
 
     switch ( weather_info.sky )
     {
-    default: 
+    default:
 	bug( "Weather_update: bad sky %d.", weather_info.sky );
 	weather_info.sky = SKY_CLOUDLESS;
 	break;
@@ -605,7 +605,7 @@ void weather_update( void )
  * Update all chars, including mobs.
 */
 void char_update( void )
-{   
+{
     CHAR_DATA *ch;
     CHAR_DATA *ch_next;
     CHAR_DATA *ch_quit;
@@ -632,7 +632,7 @@ void char_update( void )
 	{
             /* check to see if we need to go home */
             if (IS_NPC(ch) && ch->zone != NULL && ch->zone != ch->in_room->area
-            && ch->desc == NULL &&  ch->fighting == NULL 
+            && ch->desc == NULL &&  ch->fighting == NULL
 	    && !IS_AFFECTED(ch,AFF_CHARM) && number_percent() < 5)
             {
             	act("$n wanders on home.",ch,NULL,NULL,TO_ROOM);
@@ -727,7 +727,7 @@ void char_update( void )
 			send_to_char( "\n\r", ch );
 		    }
 		}
-	  
+
 		affect_remove( ch, paf );
 	    }
 	}
@@ -746,7 +746,7 @@ void char_update( void )
 
 	    if (ch->in_room == NULL)
 		continue;
-            
+
 	    act("$n writhes in agony as plague sores erupt from $s skin.",
 		ch,NULL,NULL,TO_ROOM);
 	    send_to_char("You writhe in agony from the plague.\n\r",ch);
@@ -755,27 +755,27 @@ void char_update( void )
             	if (af->type == gsn_plague)
                     break;
             }
-        
+
             if (af == NULL)
             {
             	REMOVE_BIT(ch->affected_by,AFF_PLAGUE);
             	continue;
             }
-        
+
             if (af->level == 1)
             	continue;
-        
+
 	    plague.where		= TO_AFFECTS;
             plague.type 		= gsn_plague;
-            plague.level 		= af->level - 1; 
+            plague.level 		= af->level - 1;
             plague.duration 	= number_range(1,2 * plague.level);
             plague.location		= APPLY_STR;
             plague.modifier 	= -5;
             plague.bitvector 	= AFF_PLAGUE;
-        
+
             for ( vch = ch->in_room->people; vch != NULL; vch = vch->next_in_room)
             {
-                if (!saves_spell(plague.level - 2,vch,DAM_DISEASE) 
+                if (!saves_spell(plague.level - 2,vch,DAM_DISEASE)
 		&&  !IS_IMMORTAL(vch)
             	&&  !IS_AFFECTED(vch,AFF_PLAGUE) && number_bits(4) == 0)
             	{
@@ -832,7 +832,7 @@ void char_update( void )
 
         if (ch == ch_quit)
 	{
-            do_function(ch, &do_quit, "" );
+            do_function(ch, &do_quit, (char*) "" );
 	}
     }
 
@@ -847,7 +847,7 @@ void char_update( void )
  * This function is performance sensitive.
  */
 void obj_update( void )
-{   
+{
     OBJ_DATA *obj;
     OBJ_DATA *obj_next;
     AFFECT_DATA *paf, *paf_next;
@@ -855,7 +855,7 @@ void obj_update( void )
     for ( obj = object_list; obj != NULL; obj = obj_next )
     {
 	CHAR_DATA *rch;
-	char *message;
+	const char *message;
 
 	obj_next = obj->next;
 
@@ -885,7 +885,7 @@ void obj_update( void )
 			    act(skill_table[paf->type].msg_obj,
 				rch,obj,NULL,TO_CHAR);
 			}
-			if (obj->in_room != NULL 
+			if (obj->in_room != NULL
 			&& obj->in_room->people != NULL)
 			{
 			    rch = obj->in_room->people;
@@ -910,13 +910,13 @@ void obj_update( void )
 	case ITEM_CORPSE_NPC: message = "$p decays into dust."; break;
 	case ITEM_CORPSE_PC:  message = "$p decays into dust."; break;
 	case ITEM_FOOD:       message = "$p decomposes.";	break;
-	case ITEM_POTION:     message = "$p has evaporated from disuse.";	
+	case ITEM_POTION:     message = "$p has evaporated from disuse.";
 								break;
 	case ITEM_PORTAL:     message = "$p fades out of existence."; break;
-	case ITEM_CONTAINER: 
+	case ITEM_CONTAINER:
 	    if (CAN_WEAR(obj,ITEM_WEAR_FLOAT))
 		if (obj->contains)
-		    message = 
+		    message =
 		"$p flickers and vanishes, spilling its contents on the floor.";
 		else
 		    message = "$p flickers and vanishes.";
@@ -927,7 +927,7 @@ void obj_update( void )
 
 	if ( obj->carried_by != NULL )
 	{
-	    if (IS_NPC(obj->carried_by) 
+	    if (IS_NPC(obj->carried_by)
 	    &&  obj->carried_by->pIndexData->pShop != NULL)
 		obj->carried_by->silver += obj->cost/5;
 	    else
@@ -1015,7 +1015,7 @@ void aggr_update( void )
 	wch_next = wch->next;
 	if ( IS_NPC(wch)
 	||   wch->level >= LEVEL_IMMORTAL
-	||   wch->in_room == NULL 
+	||   wch->in_room == NULL
 	||   wch->in_room->area->empty)
 	    continue;
 
@@ -1033,7 +1033,7 @@ void aggr_update( void )
 	    ||   IS_AFFECTED(ch, AFF_CHARM)
 	    ||   !IS_AWAKE(ch)
 	    ||   ( IS_SET(ch->act, ACT_WIMPY) && IS_AWAKE(wch) )
-	    ||   !can_see( ch, wch ) 
+	    ||   !can_see( ch, wch )
 	    ||   number_bits(1) == 0)
 		continue;
 
@@ -1050,7 +1050,7 @@ void aggr_update( void )
 
 		if ( !IS_NPC(vch)
 		&&   vch->level < LEVEL_IMMORTAL
-		&&   ch->level >= vch->level - 5 
+		&&   ch->level >= vch->level - 5
 		&&   ( !IS_SET(ch->act, ACT_WIMPY) || !IS_AWAKE(vch) )
 		&&   can_see( ch, vch ) )
 		{
@@ -1113,7 +1113,7 @@ void update_handler( void )
 
     if ( --pulse_point    <= 0 )
     {
-	wiznet("TICK!",NULL,NULL,WIZ_TICKS,0,0);
+	wiznet((char*)"TICK!",NULL,NULL,WIZ_TICKS,0,0);
 	pulse_point     = PULSE_TICK;
 /* number_range( PULSE_TICK / 2, 3 * PULSE_TICK / 2 ); */
 	weather_update	( );

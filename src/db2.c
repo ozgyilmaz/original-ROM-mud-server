@@ -213,7 +213,7 @@ void load_mobiles( FILE *fp )
         }
         fBootDb = TRUE;
  
-        pMobIndex                       = alloc_perm( sizeof(*pMobIndex) );
+        pMobIndex                       = (MOB_INDEX_DATA *)alloc_perm( sizeof(*pMobIndex) );
         pMobIndex->vnum                 = vnum;
 	pMobIndex->new_format		= TRUE;
 	newmobs++;
@@ -373,7 +373,7 @@ void load_objects( FILE *fp )
         }
         fBootDb = TRUE;
  
-        pObjIndex                       = alloc_perm( sizeof(*pObjIndex) );
+        pObjIndex                       = (OBJ_INDEX_DATA *)alloc_perm( sizeof(*pObjIndex) );
         pObjIndex->vnum                 = vnum;
         pObjIndex->new_format           = TRUE;
 	pObjIndex->reset_num		= 0;
@@ -463,7 +463,7 @@ void load_objects( FILE *fp )
             {
                 AFFECT_DATA *paf;
  
-                paf                     = alloc_perm( sizeof(*paf) );
+                paf                     = (AFFECT_DATA *)alloc_perm( sizeof(*paf) );
 		paf->where		= TO_OBJECT;
                 paf->type               = -1;
                 paf->level              = pObjIndex->level;
@@ -480,7 +480,7 @@ void load_objects( FILE *fp )
             {
                 AFFECT_DATA *paf;
  
-                paf                     = alloc_perm( sizeof(*paf) );
+                paf                     = (AFFECT_DATA *)alloc_perm( sizeof(*paf) );
 		letter 			= fread_letter(fp);
 		switch (letter)
 	 	{
@@ -515,7 +515,7 @@ void load_objects( FILE *fp )
             {
                 EXTRA_DESCR_DATA *ed;
  
-                ed                      = alloc_perm( sizeof(*ed) );
+                ed                      = (EXTRA_DESCR_DATA *)alloc_perm( sizeof(*ed) );
                 ed->keyword             = fread_string( fp );
                 ed->description         = fread_string( fp );
                 ed->next                = pObjIndex->extra_descr;

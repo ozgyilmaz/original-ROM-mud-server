@@ -34,11 +34,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <time.h>
 #include "merc.h"
 #include "interp.h"
 #include "recycle.h"
 #include "tables.h"
+
+int unlink(const char *pathname);
 
 /* RT code to delete yourself */
 
@@ -53,7 +56,7 @@ void do_delete( CHAR_DATA *ch, char *argument)
 
    if (IS_NPC(ch))
 	return;
-  
+
    if (ch->pcdata->confirm_delete)
    {
 	if (argument[0] != '\0')
@@ -65,9 +68,9 @@ void do_delete( CHAR_DATA *ch, char *argument)
 	else
 	{
     	    sprintf( strsave, "%s%s", PLAYER_DIR, capitalize( ch->name ) );
-	    wiznet("$N turns $Mself into line noise.",ch,NULL,0,0,0);
+	    wiznet((char*)"$N turns $Mself into line noise.",ch,NULL,0,0,0);
 	    stop_fighting(ch,TRUE);
-	    do_function(ch, &do_quit, "");
+	    do_function(ch, &do_quit, (char*)"");
 	    unlink(strsave);
 	    return;
  	}
@@ -84,9 +87,9 @@ void do_delete( CHAR_DATA *ch, char *argument)
     send_to_char("Typing delete with an argument will undo delete status.\n\r",
 	ch);
     ch->pcdata->confirm_delete = TRUE;
-    wiznet("$N is contemplating deletion.",ch,NULL,0,0,get_trust(ch));
+    wiznet((char*)"$N is contemplating deletion.",ch,NULL,0,0,get_trust(ch));
 }
-	    
+
 
 /* RT code to display channel status */
 
@@ -97,7 +100,7 @@ void do_channels( CHAR_DATA *ch, char *argument)
     /* lists all channels and their status */
     send_to_char("   channel     status\n\r",ch);
     send_to_char("---------------------\n\r",ch);
- 
+
     send_to_char("gossip         ",ch);
     if (!IS_SET(ch->comm,COMM_NOGOSSIP))
       send_to_char("ON\n\r",ch);
@@ -166,7 +169,7 @@ void do_channels( CHAR_DATA *ch, char *argument)
 
     if (IS_SET(ch->comm,COMM_SNOOP_PROOF))
 	send_to_char("You are immune to snooping.\n\r",ch);
-   
+
     if (ch->lines != PAGELEN)
     {
 	if (ch->lines)
@@ -186,10 +189,10 @@ void do_channels( CHAR_DATA *ch, char *argument)
 
     if (IS_SET(ch->comm,COMM_NOSHOUT))
       send_to_char("You cannot shout.\n\r",ch);
-  
+
     if (IS_SET(ch->comm,COMM_NOTELL))
       send_to_char("You cannot use tell.\n\r",ch);
- 
+
     if (IS_SET(ch->comm,COMM_NOCHANNELS))
      send_to_char("You cannot use channels.\n\r",ch);
 
@@ -202,13 +205,13 @@ void do_channels( CHAR_DATA *ch, char *argument)
 
 void do_deaf( CHAR_DATA *ch, char *argument)
 {
-    
+
    if (IS_SET(ch->comm,COMM_DEAF))
    {
      send_to_char("You can now hear tells again.\n\r",ch);
      REMOVE_BIT(ch->comm,COMM_DEAF);
    }
-   else 
+   else
    {
      send_to_char("From now on, you won't hear tells.\n\r",ch);
      SET_BIT(ch->comm,COMM_DEAF);
@@ -325,7 +328,7 @@ void do_gossip( CHAR_DATA *ch, char *argument )
 {
     char buf[MAX_STRING_LENGTH];
     DESCRIPTOR_DATA *d;
- 
+
     if (argument[0] == '\0' )
     {
       if (IS_SET(ch->comm,COMM_NOGOSSIP))
@@ -346,30 +349,30 @@ void do_gossip( CHAR_DATA *ch, char *argument )
           send_to_char("You must turn off quiet mode first.\n\r",ch);
           return;
         }
- 
+
         if (IS_SET(ch->comm,COMM_NOCHANNELS))
         {
           send_to_char("The gods have revoked your channel priviliges.\n\r",ch);
           return;
- 
+
        	}
 
       REMOVE_BIT(ch->comm,COMM_NOGOSSIP);
- 
+
       sprintf( buf, "You gossip '%s'\n\r", argument );
       send_to_char( buf, ch );
       for ( d = descriptor_list; d != NULL; d = d->next )
       {
         CHAR_DATA *victim;
- 
+
         victim = d->original ? d->original : d->character;
- 
+
         if ( d->connected == CON_PLAYING &&
              d->character != ch &&
              !IS_SET(victim->comm,COMM_NOGOSSIP) &&
              !IS_SET(victim->comm,COMM_QUIET) )
         {
-          act_new( "$n gossips '$t'", 
+          act_new( "$n gossips '$t'",
 		   ch,argument, d->character, TO_VICT,POS_SLEEPING );
         }
       }
@@ -380,7 +383,7 @@ void do_grats( CHAR_DATA *ch, char *argument )
 {
     char buf[MAX_STRING_LENGTH];
     DESCRIPTOR_DATA *d;
- 
+
     if (argument[0] == '\0' )
     {
       if (IS_SET(ch->comm,COMM_NOGRATS))
@@ -401,24 +404,24 @@ void do_grats( CHAR_DATA *ch, char *argument )
           send_to_char("You must turn off quiet mode first.\n\r",ch);
           return;
         }
- 
+
         if (IS_SET(ch->comm,COMM_NOCHANNELS))
         {
           send_to_char("The gods have revoked your channel priviliges.\n\r",ch);
           return;
- 
+
         }
- 
+
       REMOVE_BIT(ch->comm,COMM_NOGRATS);
- 
+
       sprintf( buf, "You grats '%s'\n\r", argument );
       send_to_char( buf, ch );
       for ( d = descriptor_list; d != NULL; d = d->next )
       {
         CHAR_DATA *victim;
- 
+
         victim = d->original ? d->original : d->character;
- 
+
         if ( d->connected == CON_PLAYING &&
              d->character != ch &&
              !IS_SET(victim->comm,COMM_NOGRATS) &&
@@ -435,7 +438,7 @@ void do_quote( CHAR_DATA *ch, char *argument )
 {
     char buf[MAX_STRING_LENGTH];
     DESCRIPTOR_DATA *d;
- 
+
     if (argument[0] == '\0' )
     {
       if (IS_SET(ch->comm,COMM_NOQUOTE))
@@ -456,24 +459,24 @@ void do_quote( CHAR_DATA *ch, char *argument )
           send_to_char("You must turn off quiet mode first.\n\r",ch);
           return;
         }
- 
+
         if (IS_SET(ch->comm,COMM_NOCHANNELS))
         {
           send_to_char("The gods have revoked your channel priviliges.\n\r",ch);
           return;
- 
+
         }
- 
+
       REMOVE_BIT(ch->comm,COMM_NOQUOTE);
- 
+
       sprintf( buf, "You quote '%s'\n\r", argument );
       send_to_char( buf, ch );
       for ( d = descriptor_list; d != NULL; d = d->next )
       {
         CHAR_DATA *victim;
- 
+
         victim = d->original ? d->original : d->character;
- 
+
         if ( d->connected == CON_PLAYING &&
              d->character != ch &&
              !IS_SET(victim->comm,COMM_NOQUOTE) &&
@@ -491,7 +494,7 @@ void do_question( CHAR_DATA *ch, char *argument )
 {
     char buf[MAX_STRING_LENGTH];
     DESCRIPTOR_DATA *d;
- 
+
     if (argument[0] == '\0' )
     {
       if (IS_SET(ch->comm,COMM_NOQUESTION))
@@ -512,23 +515,23 @@ void do_question( CHAR_DATA *ch, char *argument )
           send_to_char("You must turn off quiet mode first.\n\r",ch);
           return;
         }
- 
+
         if (IS_SET(ch->comm,COMM_NOCHANNELS))
         {
           send_to_char("The gods have revoked your channel priviliges.\n\r",ch);
           return;
 	}
- 
+
         REMOVE_BIT(ch->comm,COMM_NOQUESTION);
- 
+
       sprintf( buf, "You question '%s'\n\r", argument );
       send_to_char( buf, ch );
       for ( d = descriptor_list; d != NULL; d = d->next )
       {
         CHAR_DATA *victim;
- 
+
         victim = d->original ? d->original : d->character;
- 
+
         if ( d->connected == CON_PLAYING &&
              d->character != ch &&
              !IS_SET(victim->comm,COMM_NOQUESTION) &&
@@ -546,7 +549,7 @@ void do_answer( CHAR_DATA *ch, char *argument )
 {
     char buf[MAX_STRING_LENGTH];
     DESCRIPTOR_DATA *d;
- 
+
     if (argument[0] == '\0' )
     {
       if (IS_SET(ch->comm,COMM_NOQUESTION))
@@ -567,23 +570,23 @@ void do_answer( CHAR_DATA *ch, char *argument )
           send_to_char("You must turn off quiet mode first.\n\r",ch);
           return;
         }
- 
+
         if (IS_SET(ch->comm,COMM_NOCHANNELS))
         {
           send_to_char("The gods have revoked your channel priviliges.\n\r",ch);
           return;
 	}
- 
+
         REMOVE_BIT(ch->comm,COMM_NOQUESTION);
- 
+
       sprintf( buf, "You answer '%s'\n\r", argument );
       send_to_char( buf, ch );
       for ( d = descriptor_list; d != NULL; d = d->next )
       {
         CHAR_DATA *victim;
- 
+
         victim = d->original ? d->original : d->character;
- 
+
         if ( d->connected == CON_PLAYING &&
              d->character != ch &&
              !IS_SET(victim->comm,COMM_NOQUESTION) &&
@@ -601,7 +604,7 @@ void do_music( CHAR_DATA *ch, char *argument )
 {
     char buf[MAX_STRING_LENGTH];
     DESCRIPTOR_DATA *d;
- 
+
     if (argument[0] == '\0' )
     {
       if (IS_SET(ch->comm,COMM_NOMUSIC))
@@ -622,24 +625,24 @@ void do_music( CHAR_DATA *ch, char *argument )
           send_to_char("You must turn off quiet mode first.\n\r",ch);
           return;
         }
- 
+
         if (IS_SET(ch->comm,COMM_NOCHANNELS))
         {
           send_to_char("The gods have revoked your channel priviliges.\n\r",ch);
           return;
 	}
- 
+
         REMOVE_BIT(ch->comm,COMM_NOMUSIC);
- 
+
       sprintf( buf, "You MUSIC: '%s'\n\r", argument );
       send_to_char( buf, ch );
       sprintf( buf, "$n MUSIC: '%s'", argument );
       for ( d = descriptor_list; d != NULL; d = d->next )
       {
         CHAR_DATA *victim;
- 
+
         victim = d->original ? d->original : d->character;
- 
+
         if ( d->connected == CON_PLAYING &&
              d->character != ch &&
              !IS_SET(victim->comm,COMM_NOMUSIC) &&
@@ -720,7 +723,7 @@ void do_immtalk( CHAR_DATA *ch, char *argument )
       {
 	send_to_char("Immortal channel is now OFF\n\r",ch);
 	SET_BIT(ch->comm,COMM_NOWIZ);
-      } 
+      }
       return;
     }
 
@@ -730,8 +733,8 @@ void do_immtalk( CHAR_DATA *ch, char *argument )
     act_new("$n: $t",ch,argument,NULL,TO_CHAR,POS_DEAD);
     for ( d = descriptor_list; d != NULL; d = d->next )
     {
-	if ( d->connected == CON_PLAYING && 
-	     IS_IMMORTAL(d->character) && 
+	if ( d->connected == CON_PLAYING &&
+	     IS_IMMORTAL(d->character) &&
              !IS_SET(d->character->comm,COMM_NOWIZ) )
 	{
 	    act_new("$n: $t",ch,argument,d->character,TO_VICT,POS_DEAD);
@@ -782,7 +785,7 @@ void do_shout( CHAR_DATA *ch, char *argument )
         send_to_char( "You can't shout.\n\r", ch );
         return;
     }
- 
+
     REMOVE_BIT(ch->comm,COMM_SHOUTSOFF);
 
     WAIT_STATE( ch, 12 );
@@ -797,7 +800,7 @@ void do_shout( CHAR_DATA *ch, char *argument )
 	if ( d->connected == CON_PLAYING &&
 	     d->character != ch &&
 	     !IS_SET(victim->comm, COMM_SHOUTSOFF) &&
-	     !IS_SET(victim->comm, COMM_QUIET) ) 
+	     !IS_SET(victim->comm, COMM_QUIET) )
 	{
 	    act("$n shouts '$t'",ch,argument,d->character,TO_VICT);
 	}
@@ -865,7 +868,7 @@ void do_tell( CHAR_DATA *ch, char *argument )
 	act( "$E can't hear you.", ch, 0, victim, TO_CHAR );
 	return;
     }
-  
+
     if ((IS_SET(victim->comm,COMM_QUIET) || IS_SET(victim->comm,COMM_DEAF))
     && !IS_IMMORTAL(ch))
     {
@@ -952,7 +955,7 @@ void do_reply( CHAR_DATA *ch, char *argument )
 		ch,NULL,victim,TO_CHAR,POS_DEAD);
             return;
         }
- 
+
         act_new("$E is AFK, but your tell will go through when $E returns.",
             ch,NULL,victim,TO_CHAR,POS_DEAD);
         sprintf(buf,"%s tells you '%s'\n\r",PERS(ch,victim),argument);
@@ -979,7 +982,7 @@ void do_yell( CHAR_DATA *ch, char *argument )
         send_to_char( "You can't yell.\n\r", ch );
         return;
     }
- 
+
     if ( argument[0] == '\0' )
     {
 	send_to_char( "Yell what?\n\r", ch );
@@ -993,7 +996,7 @@ void do_yell( CHAR_DATA *ch, char *argument )
 	if ( d->connected == CON_PLAYING
 	&&   d->character != ch
 	&&   d->character->in_room != NULL
-	&&   d->character->in_room->area == ch->in_room->area 
+	&&   d->character->in_room->area == ch->in_room->area
         &&   !IS_SET(d->character->comm,COMM_QUIET) )
 	{
 	    act("$n yells '$t'",ch,argument,d->character,TO_VICT);
@@ -1011,13 +1014,13 @@ void do_emote( CHAR_DATA *ch, char *argument )
         send_to_char( "You can't show your emotions.\n\r", ch );
         return;
     }
- 
+
     if ( argument[0] == '\0' )
     {
         send_to_char( "Emote what?\n\r", ch );
         return;
     }
- 
+
     act( "$n $T", ch, NULL, argument, TO_ROOM );
     act( "$n $T", ch, NULL, argument, TO_CHAR );
     return;
@@ -1029,20 +1032,20 @@ void do_pmote( CHAR_DATA *ch, char *argument )
     CHAR_DATA *vch;
     char *letter,*name;
     char last[MAX_INPUT_LENGTH], temp[MAX_STRING_LENGTH];
-    int matches = 0;
+    size_t matches = 0;
 
     if ( !IS_NPC(ch) && IS_SET(ch->comm, COMM_NOEMOTE) )
     {
         send_to_char( "You can't show your emotions.\n\r", ch );
         return;
     }
- 
+
     if ( argument[0] == '\0' )
     {
         send_to_char( "Emote what?\n\r", ch );
         return;
     }
- 
+
     act( "$n $t", ch, argument, NULL, TO_CHAR );
 
     for (vch = ch->in_room->people; vch != NULL; vch = vch->next_in_room)
@@ -1060,9 +1063,9 @@ void do_pmote( CHAR_DATA *ch, char *argument )
 	temp[strlen(argument) - strlen(letter)] = '\0';
    	last[0] = '\0';
  	name = vch->name;
-	
+
 	for (; *letter != '\0'; letter++)
-	{ 
+	{
 	    if (*letter == '\'' && matches == strlen(vch->name))
 	    {
 		strcat(temp,"r");
@@ -1074,7 +1077,7 @@ void do_pmote( CHAR_DATA *ch, char *argument )
 		matches = 0;
 		continue;
 	    }
-	    
+
  	    if (matches == strlen(vch->name))
 	    {
 		matches = 0;
@@ -1104,7 +1107,7 @@ void do_pmote( CHAR_DATA *ch, char *argument )
 
 	act("$N $t",vch,temp,ch,TO_CHAR);
     }
-	
+
     return;
 }
 
@@ -1114,7 +1117,7 @@ void do_pmote( CHAR_DATA *ch, char *argument )
  */
 struct	pose_table_type
 {
-    char *	message[2*MAX_CLASS];
+    const char *	message[2*MAX_CLASS];
 };
 
 const	struct	pose_table_type	pose_table	[]	=
@@ -1351,11 +1354,11 @@ void do_pose( CHAR_DATA *ch, char *argument )
     if ( IS_NPC(ch) )
 	return;
 
-    level = UMIN( ch->level, sizeof(pose_table) / sizeof(pose_table[0]) - 1 );
+    level = UMIN( ch->level, (int)sizeof(pose_table) / (int)sizeof(pose_table[0]) - 1 );
     pose  = number_range(0, level);
 
-    act( pose_table[pose].message[2*ch->class+0], ch, NULL, NULL, TO_CHAR );
-    act( pose_table[pose].message[2*ch->class+1], ch, NULL, NULL, TO_ROOM );
+    act( pose_table[pose].message[2*ch->iclass+0], ch, NULL, NULL, TO_CHAR );
+    act( pose_table[pose].message[2*ch->iclass+1], ch, NULL, NULL, TO_ROOM );
 
     return;
 }
@@ -1410,12 +1413,12 @@ void do_quit( CHAR_DATA *ch, char *argument )
 	send_to_char( "You're not DEAD yet.\n\r", ch );
 	return;
     }
-    send_to_char( 
+    send_to_char(
 	"Alas, all good things must come to an end.\n\r",ch);
     act( "$n has left the game.", ch, NULL, NULL, TO_ROOM );
     sprintf( log_buf, "%s has quit.", ch->name );
     log_string( log_buf );
-     wiznet("$N rejoins the real world.",ch,NULL,WIZ_LOGINS,0,get_trust(ch));
+     wiznet((char*)"$N rejoins the real world.",ch,NULL,WIZ_LOGINS,0,get_trust(ch));
 
     /*
      * After extract_char the ch is no longer valid!
@@ -1438,7 +1441,7 @@ void do_quit( CHAR_DATA *ch, char *argument )
 	{
 	    extract_char(tch,TRUE);
 	    close_socket(d);
-	} 
+	}
     }
 
     return;
@@ -1504,7 +1507,7 @@ void do_follow( CHAR_DATA *ch, char *argument )
     }
 
     REMOVE_BIT(ch->act,PLR_NOFOLLOW);
-    
+
     if ( ch->master != NULL )
 	stop_follower( ch );
 
@@ -1563,7 +1566,7 @@ void stop_follower( CHAR_DATA *ch )
 
 /* nukes charmed monsters and pets */
 void nuke_pets( CHAR_DATA *ch )
-{    
+{
     CHAR_DATA *pet;
 
     if ((pet = ch->pet) != NULL)
@@ -1657,7 +1660,7 @@ void do_order( CHAR_DATA *ch, char *argument )
 	    return;
 	}
 
-	if (!IS_AFFECTED(victim, AFF_CHARM) || victim->master != ch 
+	if (!IS_AFFECTED(victim, AFF_CHARM) || victim->master != ch
 	||  (IS_IMMORTAL(victim) && victim->trust >= ch->trust))
 	{
 	    send_to_char( "Do it yourself!\n\r", ch );
@@ -1717,7 +1720,7 @@ void do_group( CHAR_DATA *ch, char *argument )
 		sprintf( buf,
 		"[%2d %s] %-16s %4d/%4d hp %4d/%4d mana %4d/%4d mv %5d xp\n\r",
 		    gch->level,
-		    IS_NPC(gch) ? "Mob" : class_table[gch->class].who_name,
+		    IS_NPC(gch) ? "Mob" : class_table[gch->iclass].who_name,
 		    capitalize( PERS(gch, ch) ),
 		    gch->hit,   gch->max_hit,
 		    gch->mana,  gch->max_mana,
@@ -1746,13 +1749,13 @@ void do_group( CHAR_DATA *ch, char *argument )
 	act_new("$N isn't following you.",ch,NULL,victim,TO_CHAR,POS_SLEEPING);
 	return;
     }
-    
+
     if (IS_AFFECTED(victim,AFF_CHARM))
     {
         send_to_char("You can't remove charmed mobs from your group.\n\r",ch);
         return;
     }
-    
+
     if (IS_AFFECTED(ch,AFF_CHARM))
     {
     	act_new("You like your master too much to leave $m!",
@@ -1802,7 +1805,7 @@ void do_split( CHAR_DATA *ch, char *argument )
 	send_to_char( "Split how much?\n\r", ch );
 	return;
     }
-    
+
     amount_silver = atoi( arg1 );
 
     if (arg2[0] != '\0')
@@ -1825,7 +1828,7 @@ void do_split( CHAR_DATA *ch, char *argument )
 	send_to_char( "You don't have that much to split.\n\r", ch );
 	return;
     }
-  
+
     members = 0;
     for ( gch = ch->in_room->people; gch != NULL; gch = gch->next_in_room )
     {
@@ -1838,7 +1841,7 @@ void do_split( CHAR_DATA *ch, char *argument )
 	send_to_char( "Just keep it all.\n\r", ch );
 	return;
     }
-	    
+
     share_silver = amount_silver / members;
     extra_silver = amount_silver % members;
 

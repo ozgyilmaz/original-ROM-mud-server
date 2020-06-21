@@ -42,10 +42,6 @@
 #define DECLARE_SPELL_FUN( fun )	SPELL_FUN fun
 #endif
 
-/* system calls */
-int unlink();
-int system();
-
 
 
 /*
@@ -69,7 +65,6 @@ typedef int				bool;
 #define unix
 #else
 typedef short   int			sh_int;
-typedef unsigned char			bool;
 #endif
 
 
@@ -167,7 +162,7 @@ typedef void SPELL_FUN	args( ( int sn, int level, CHAR_DATA *ch, void *vo,
 #define BAN_SUFFIX		A
 #define BAN_PREFIX		B
 #define BAN_NEWBIES		C
-#define BAN_ALL			D	
+#define BAN_ALL			D
 #define BAN_PERMIT		E
 #define BAN_PERMANENT		F
 
@@ -235,8 +230,8 @@ struct	weather_data
 #define CON_GET_NEW_SEX			 7
 #define CON_GET_NEW_CLASS		 8
 #define CON_GET_ALIGNMENT		 9
-#define CON_DEFAULT_CHOICE		10 
-#define CON_GEN_GROUPS			11 
+#define CON_DEFAULT_CHOICE		10
+#define CON_GEN_GROUPS			11
 #define CON_PICK_WEAPON			12
 #define CON_READ_IMOTD			13
 #define CON_READ_MOTD			14
@@ -361,7 +356,7 @@ struct	shop_data
 
 struct	class_type
 {
-    char *	name;			/* the full name of the class */
+    const char *	name;			/* the full name of the class */
     char 	who_name	[4];	/* Three-letter name for 'who'	*/
     sh_int	attr_prime;		/* Prime attribute		*/
     sh_int	weapon;			/* First weapon			*/
@@ -372,19 +367,19 @@ struct	class_type
     sh_int	hp_min;			/* Min hp gained on leveling	*/
     sh_int	hp_max;			/* Max hp gained on leveling	*/
     bool	fMana;			/* Class gains mana on level	*/
-    char *	base_group;		/* base skills gained		*/
-    char *	default_group;		/* default skills gained	*/
+    const char *	base_group;		/* base skills gained		*/
+    const char *	default_group;		/* default skills gained	*/
 };
 
 struct item_type
 {
     int		type;
-    char *	name;
+    const char *	name;
 };
 
 struct weapon_type
 {
-    char *	name;
+    const char *	name;
     sh_int	vnum;
     sh_int	type;
     sh_int	*gsn;
@@ -392,21 +387,21 @@ struct weapon_type
 
 struct wiznet_type
 {
-    char *	name;
+    const char *	name;
     long 	flag;
     int		level;
 };
 
 struct attack_type
 {
-    char *	name;			/* name */
-    char *	noun;			/* message */
+    const char *	name;			/* name */
+    const char *	noun;			/* message */
     int   	damage;			/* damage class */
 };
 
 struct race_type
 {
-    char *	name;			/* call name of the race */
+    const char *	name;			/* call name of the race */
     bool	pc_race;		/* can be chosen by pcs */
     long	act;			/* act bits for the race */
     long	aff;			/* aff bits for the race */
@@ -421,11 +416,11 @@ struct race_type
 
 struct pc_race_type  /* additional data for pc races */
 {
-    char *	name;			/* MUST be in race_type */
-    char 	who_name[6];
+    const char *	name;			/* MUST be in race_type */
+    const char 	who_name[6];
     sh_int	points;			/* cost in points of the race */
     sh_int	class_mult[MAX_CLASS];	/* exp multiplier for class, * 100 */
-    char *	skills[5];		/* bonus skills for the race */
+    const char *	skills[5];		/* bonus skills for the race */
     sh_int 	stats[MAX_STATS];	/* starting stats */
     sh_int	max_stats[MAX_STATS];	/* maximum stats */
     sh_int	size;			/* aff bits for the race */
@@ -434,7 +429,7 @@ struct pc_race_type  /* additional data for pc races */
 
 struct spec_type
 {
-    char * 	name;			/* special function name */
+    const char * 	name;			/* special function name */
     SPEC_FUN *	function;		/* the function */
 };
 
@@ -553,7 +548,7 @@ struct	kill_data
 #define Z			33554432
 #define aa			67108864 	/* doubled due to conflicts */
 #define bb			134217728
-#define cc			268435456    
+#define cc			268435456
 #define dd			536870912
 #define ee			1073741824
 
@@ -570,7 +565,7 @@ struct	kill_data
 #define ACT_PET			(I)		/* Auto set for pets	*/
 #define ACT_TRAIN		(J)		/* Can train PC's	*/
 #define ACT_PRACTICE		(K)		/* Can practice PC's	*/
-#define ACT_UNDEAD		(O)	
+#define ACT_UNDEAD		(O)
 #define ACT_CLERIC		(Q)
 #define ACT_MAGE		(R)
 #define ACT_THIEF		(S)
@@ -659,7 +654,7 @@ struct	kill_data
 #define IMM_WOOD                (X)
 #define IMM_SILVER              (Y)
 #define IMM_IRON                (Z)
- 
+
 /* RES bits for mobs */
 #define RES_SUMMON		(A)
 #define RES_CHARM		(B)
@@ -684,7 +679,7 @@ struct	kill_data
 #define RES_WOOD                (X)
 #define RES_SILVER              (Y)
 #define RES_IRON                (Z)
- 
+
 /* VULN bits for mobs */
 #define VULN_SUMMON		(A)
 #define VULN_CHARM		(B)
@@ -709,14 +704,14 @@ struct	kill_data
 #define VULN_WOOD               (X)
 #define VULN_SILVER             (Y)
 #define VULN_IRON		(Z)
- 
+
 /* body form */
 #define FORM_EDIBLE             (A)
 #define FORM_POISON             (B)
 #define FORM_MAGICAL            (C)
 #define FORM_INSTANT_DECAY      (D)
 #define FORM_OTHER              (E)  /* defined by material bit */
- 
+
 /* actual form */
 #define FORM_ANIMAL             (G)
 #define FORM_SENTIENT           (H)
@@ -724,7 +719,7 @@ struct	kill_data
 #define FORM_CONSTRUCT          (J)
 #define FORM_MIST               (K)
 #define FORM_INTANGIBLE         (L)
- 
+
 #define FORM_BIPED              (M)
 #define FORM_CENTAUR            (N)
 #define FORM_INSECT             (O)
@@ -732,7 +727,7 @@ struct	kill_data
 #define FORM_CRUSTACEAN         (Q)
 #define FORM_WORM               (R)
 #define FORM_BLOB		(S)
- 
+
 #define FORM_MAMMAL             (V)
 #define FORM_BIRD               (W)
 #define FORM_REPTILE            (X)
@@ -740,8 +735,8 @@ struct	kill_data
 #define FORM_DRAGON             (Z)
 #define FORM_AMPHIBIAN          (aa)
 #define FORM_FISH               (bb)
-#define FORM_COLD_BLOOD		(cc)	
- 
+#define FORM_COLD_BLOOD		(cc)
+
 /* body parts */
 #define PART_HEAD               (A)
 #define PART_ARMS               (B)
@@ -979,7 +974,7 @@ struct	kill_data
 #define WEAPON_MACE		4
 #define WEAPON_AXE		5
 #define WEAPON_FLAIL		6
-#define WEAPON_WHIP		7	
+#define WEAPON_WHIP		7
 #define WEAPON_POLEARM		8
 
 /* weapon types */
@@ -1265,7 +1260,7 @@ struct	kill_data
 #define COMM_NOEMOTE		(T)
 #define COMM_NOSHOUT		(U)
 #define COMM_NOTELL		(V)
-#define COMM_NOCHANNELS		(W) 
+#define COMM_NOCHANNELS		(W)
 #define COMM_SNOOP_PROOF	(Y)
 #define COMM_AFK		(Z)
 
@@ -1337,7 +1332,7 @@ struct	mob_index_data
 
 
 /* memory settings */
-#define MEM_CUSTOMER	A	
+#define MEM_CUSTOMER	A
 #define MEM_SELLER	B
 #define MEM_HOSTILE	C
 #define MEM_AFRAID	D
@@ -1347,7 +1342,7 @@ struct mem_data
 {
     MEM_DATA 	*next;
     bool	valid;
-    int		id; 	
+    int		id;
     int 	reaction;
     time_t 	when;
 };
@@ -1390,7 +1385,7 @@ struct	char_data
     sh_int		group;
     sh_int		clan;
     sh_int		sex;
-    sh_int		class;
+    sh_int		iclass;
     sh_int		race;
     sh_int		level;
     sh_int		trust;
@@ -1497,8 +1492,8 @@ struct gen_data
 
 struct	liq_type
 {
-    char *	liq_name;
-    char *	liq_color;
+    const char *	liq_name;
+    const char *	liq_color;
     sh_int	liq_affect[5];
 };
 
@@ -1602,7 +1597,7 @@ struct	exit_data
 /*
  * Reset commands:
  *   '*': comment
- *   'M': read a mobile 
+ *   'M': read a mobile
  *   'O': read an object
  *   'P': put object in object
  *   'G': give object to mobile
@@ -1708,9 +1703,9 @@ struct	room_index_data
  */
 struct	skill_type
 {
-    char *	name;			/* Name of skill		*/
+    const char *	name;			/* Name of skill		*/
     sh_int	skill_level[MAX_CLASS];	/* Level needed by class	*/
-    sh_int	rating[MAX_CLASS];	/* How hard it is to learn	*/	
+    sh_int	rating[MAX_CLASS];	/* How hard it is to learn	*/
     SPELL_FUN *	spell_fun;		/* Spell pointer (for spells)	*/
     sh_int	target;			/* Legal targets		*/
     sh_int	minimum_position;	/* Position for caster / user	*/
@@ -1718,16 +1713,16 @@ struct	skill_type
     sh_int	slot;			/* Slot for #OBJECT loading	*/
     sh_int	min_mana;		/* Minimum mana used		*/
     sh_int	beats;			/* Waiting time after use	*/
-    char *	noun_damage;		/* Damage message		*/
-    char *	msg_off;		/* Wear off message		*/
-    char *	msg_obj;		/* Wear off message for obects	*/
+    const char *	noun_damage;		/* Damage message		*/
+    const char *	msg_off;		/* Wear off message		*/
+    const char *	msg_obj;		/* Wear off message for obects	*/
 };
 
 struct  group_type
 {
-    char *	name;
+    const char *	name;
     sh_int	rating[MAX_CLASS];
-    char *	spells[MAX_IN_GROUP];
+    const char *	spells[MAX_IN_GROUP];
 };
 
 
@@ -1773,18 +1768,18 @@ extern sh_int  gsn_shield_block;
 extern sh_int  gsn_spear;
 extern sh_int  gsn_sword;
 extern sh_int  gsn_whip;
- 
+
 extern sh_int  gsn_bash;
 extern sh_int  gsn_berserk;
 extern sh_int  gsn_dirt;
 extern sh_int  gsn_hand_to_hand;
 extern sh_int  gsn_trip;
- 
+
 extern sh_int  gsn_fast_healing;
 extern sh_int  gsn_haggle;
 extern sh_int  gsn_lore;
 extern sh_int  gsn_meditation;
- 
+
 extern sh_int  gsn_scrolls;
 extern sh_int  gsn_staves;
 extern sh_int  gsn_wands;
@@ -1828,7 +1823,7 @@ extern sh_int  gsn_recall;
 #define IS_AWAKE(ch)		(ch->position > POS_SLEEPING)
 #define GET_AC(ch,type)		((ch)->armor[type]			    \
 		        + ( IS_AWAKE(ch)			    \
-			? dex_app[get_curr_stat(ch,STAT_DEX)].defensive : 0 ))  
+			? dex_app[get_curr_stat(ch,STAT_DEX)].defensive : 0 ))
 #define GET_HITROLL(ch)	\
 		((ch)->hitroll+str_app[get_curr_stat(ch,STAT_STR)].tohit)
 #define GET_DAMROLL(ch) \
@@ -1903,10 +1898,11 @@ extern	const	struct	liq_type	liq_table	[];
 extern	const	struct	skill_type	skill_table	[MAX_SKILL];
 extern  const   struct  group_type      group_table	[MAX_GROUP];
 extern          struct social_type      social_table	[MAX_SOCIALS];
-extern	char *	const			title_table	[MAX_CLASS]
+extern	const char *			title_table	[MAX_CLASS]
 							[MAX_LEVEL+1]
 							[2];
-
+extern   const char *   dir_name        [];
+extern   const sh_int  rev_dir        [];
 
 
 /*
@@ -1918,6 +1914,8 @@ extern		SHOP_DATA	  *	shop_first;
 extern		CHAR_DATA	  *	char_list;
 extern		DESCRIPTOR_DATA   *	descriptor_list;
 extern		OBJ_DATA	  *	object_list;
+extern		NOTE_DATA	  *	note_list;
+extern		NOTE_DATA	  *	note_free;
 
 extern		char			bug_buf		[];
 extern		time_t			current_time;
@@ -1988,7 +1986,7 @@ char *	crypt		args( ( const char *key, const char *salt ) );
 int	fclose		args( ( FILE *stream ) );
 int	fprintf		args( ( FILE *stream, const char *format, ... ) );
 #if	defined(SYSV)
-siz_t	fread		args( ( void *ptr, size_t size, size_t n, 
+siz_t	fread		args( ( void *ptr, size_t size, size_t n,
 			    FILE *stream) );
 #elif !defined(__SVR4)
 int	fread		args( ( void *ptr, int size, int n, FILE *stream ) );
@@ -2113,7 +2111,7 @@ void	send_to_char	args( ( const char *txt, CHAR_DATA *ch ) );
 void	page_to_char	args( ( const char *txt, CHAR_DATA *ch ) );
 void	act		args( ( const char *format, CHAR_DATA *ch,
 			    const void *arg1, const void *arg2, int type ) );
-void	act_new		args( ( const char *format, CHAR_DATA *ch, 
+void	act_new		args( ( const char *format, CHAR_DATA *ch,
 			    const void *arg1, const void *arg2, int type,
 			    int min_pos) );
 
@@ -2157,7 +2155,7 @@ bool	str_prefix	args( ( const char *astr, const char *bstr ) );
 bool	str_infix	args( ( const char *astr, const char *bstr ) );
 bool	str_suffix	args( ( const char *astr, const char *bstr ) );
 char *	capitalize	args( ( const char *str ) );
-void	append_file	args( ( CHAR_DATA *ch, char *file, char *str ) );
+void	append_file	args( ( CHAR_DATA *ch, const char *file, char *str ) );
 void	bug		args( ( const char *str, int param ) );
 void	log_string	args( ( const char *str ) );
 void	tail_chain	args( ( void ) );
@@ -2176,9 +2174,9 @@ bool 	is_safe_spell	args( (CHAR_DATA *ch, CHAR_DATA *victim, bool area ) );
 void	violence_update	args( ( void ) );
 void	multi_hit	args( ( CHAR_DATA *ch, CHAR_DATA *victim, int dt ) );
 bool	damage		args( ( CHAR_DATA *ch, CHAR_DATA *victim, int dam,
-			        int dt, int class, bool show ) );
+			        int dt, int, bool show ) );
 bool    damage_old      args( ( CHAR_DATA *ch, CHAR_DATA *victim, int dam,
-                                int dt, int class, bool show ) );
+                                int dt, int, bool show ) );
 void	update_pos	args( ( CHAR_DATA *victim ) );
 void	stop_fighting	args( ( CHAR_DATA *ch, bool fBoth ) );
 void	check_killer	args( ( CHAR_DATA *ch, CHAR_DATA *victim) );
@@ -2196,7 +2194,7 @@ int	weapon_lookup	args( ( const char *name) );
 int	weapon_type	args( ( const char *name) );
 char 	*weapon_name	args( ( int weapon_Type) );
 int	item_lookup	args( ( const char *name) );
-char	*item_name	args( ( int item_type) ); 
+char	*item_name	args( ( int item_type) );
 int	attack_lookup	args( ( const char *name) );
 int	race_lookup	args( ( const char *name) );
 long	wiznet_lookup	args( ( const char *name) );
@@ -2243,7 +2241,7 @@ CD *	get_char_world	args( ( CHAR_DATA *ch, char *argument ) );
 OD *	get_obj_type	args( ( OBJ_INDEX_DATA *pObjIndexData ) );
 OD *	get_obj_list	args( ( CHAR_DATA *ch, char *argument,
 			    OBJ_DATA *list ) );
-OD *	get_obj_carry	args( ( CHAR_DATA *ch, char *argument, 
+OD *	get_obj_carry	args( ( CHAR_DATA *ch, char *argument,
 			    CHAR_DATA *viewer ) );
 OD *	get_obj_wear	args( ( CHAR_DATA *ch, char *argument ) );
 OD *	get_obj_here	args( ( CHAR_DATA *ch, char *argument ) );
@@ -2297,7 +2295,7 @@ bool 	parse_gen_groups args( ( CHAR_DATA *ch,char *argument ) );
 void 	list_group_costs args( ( CHAR_DATA *ch ) );
 void    list_group_known args( ( CHAR_DATA *ch ) );
 int 	exp_per_level	args( ( CHAR_DATA *ch, int points ) );
-void 	check_improve	args( ( CHAR_DATA *ch, int sn, bool success, 
+void 	check_improve	args( ( CHAR_DATA *ch, int sn, bool success,
 				    int multiplier ) );
 int 	group_lookup	args( (const char *name) );
 void	gn_add		args( ( CHAR_DATA *ch, int gn) );

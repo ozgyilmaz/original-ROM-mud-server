@@ -46,7 +46,7 @@ NOTE_DATA *new_note()
     NOTE_DATA *note;
 
     if (note_free == NULL)
-	note = alloc_perm(sizeof(*note));
+	note = (NOTE_DATA *)alloc_perm(sizeof(*note));
     else
     { 
 	note = note_free;
@@ -82,7 +82,7 @@ BAN_DATA *new_ban(void)
     BAN_DATA *ban;
 
     if (ban_free == NULL)
-	ban = alloc_perm(sizeof(*ban));
+	ban = (BAN_DATA *)alloc_perm(sizeof(*ban));
     else
     {
 	ban = ban_free;
@@ -116,7 +116,7 @@ DESCRIPTOR_DATA *new_descriptor(void)
     DESCRIPTOR_DATA *d;
 
     if (descriptor_free == NULL)
-	d = alloc_perm(sizeof(*d));
+	d = (DESCRIPTOR_DATA *)alloc_perm(sizeof(*d));
     else
     {
 	d = descriptor_free;
@@ -149,7 +149,7 @@ GEN_DATA *new_gen_data(void)
     GEN_DATA *gen;
 
     if (gen_data_free == NULL)
-	gen = alloc_perm(sizeof(*gen));
+	gen = (GEN_DATA *)alloc_perm(sizeof(*gen));
     else
     {
 	gen = gen_data_free;
@@ -179,7 +179,7 @@ EXTRA_DESCR_DATA *new_extra_descr(void)
     EXTRA_DESCR_DATA *ed;
 
     if (extra_descr_free == NULL)
-	ed = alloc_perm(sizeof(*ed));
+	ed = (EXTRA_DESCR_DATA *)alloc_perm(sizeof(*ed));
     else
     {
 	ed = extra_descr_free;
@@ -215,7 +215,7 @@ AFFECT_DATA *new_affect(void)
     AFFECT_DATA *af;
 
     if (affect_free == NULL)
-	af = alloc_perm(sizeof(*af));
+	af = (AFFECT_DATA *)alloc_perm(sizeof(*af));
     else
     {
 	af = affect_free;
@@ -248,7 +248,7 @@ OBJ_DATA *new_obj(void)
     OBJ_DATA *obj;
 
     if (obj_free == NULL)
-	obj = alloc_perm(sizeof(*obj));
+	obj = (OBJ_DATA *)alloc_perm(sizeof(*obj));
     else
     {
 	obj = obj_free;
@@ -303,7 +303,7 @@ CHAR_DATA *new_char (void)
     int i;
 
     if (char_free == NULL)
-	ch = alloc_perm(sizeof(*ch));
+	ch = (CHAR_DATA *)alloc_perm(sizeof(*ch));
     else
     {
 	ch = char_free;
@@ -390,7 +390,7 @@ PC_DATA *new_pcdata(void)
     PC_DATA *pcdata;
 
     if (pcdata_free == NULL)
-	pcdata = alloc_perm(sizeof(*pcdata));
+	pcdata = (PC_DATA *)alloc_perm(sizeof(*pcdata));
     else
     {
 	pcdata = pcdata_free;
@@ -470,7 +470,7 @@ MEM_DATA *new_mem_data(void)
     MEM_DATA *memory;
   
     if (mem_data_free == NULL)
-	memory = alloc_mem(sizeof(*memory));
+	memory = (MEM_DATA *)alloc_mem(sizeof(*memory));
     else
     {
 	memory = mem_data_free;
@@ -524,7 +524,7 @@ BUFFER *new_buf()
     BUFFER *buffer;
 
     if (buf_free == NULL) 
-	buffer = alloc_perm(sizeof(*buffer));
+	buffer = (BUFFER *)alloc_perm(sizeof(*buffer));
     else
     {
 	buffer = buf_free;
@@ -535,7 +535,7 @@ BUFFER *new_buf()
     buffer->state	= BUFFER_SAFE;
     buffer->size	= get_size(BASE_BUF);
 
-    buffer->string	= alloc_mem(buffer->size);
+    buffer->string	= (char *)alloc_mem(buffer->size);
     buffer->string[0]	= '\0';
     VALIDATE(buffer);
 
@@ -547,7 +547,7 @@ BUFFER *new_buf_size(int size)
     BUFFER *buffer;
  
     if (buf_free == NULL)
-        buffer = alloc_perm(sizeof(*buffer));
+        buffer = (BUFFER *)alloc_perm(sizeof(*buffer));
     else
     {
         buffer = buf_free;
@@ -562,7 +562,7 @@ BUFFER *new_buf_size(int size)
         bug("new_buf: buffer size %d too large.",size);
         exit(1);
     }
-    buffer->string      = alloc_mem(buffer->size);
+    buffer->string      = (char *)alloc_mem(buffer->size);
     buffer->string[0]   = '\0';
     VALIDATE(buffer);
  
@@ -616,7 +616,7 @@ bool add_buf(BUFFER *buffer, char *string)
 
     if (buffer->size != oldsize)
     {
-	buffer->string	= alloc_mem(buffer->size);
+	buffer->string	= (char *)alloc_mem(buffer->size);
 
 	strcpy(buffer->string,oldstr);
 	free_mem(oldstr,oldsize);
