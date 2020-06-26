@@ -42,6 +42,7 @@
 #define DECLARE_SPELL_FUN( fun )	SPELL_FUN fun
 #endif
 
+#include "color.h"
 
 
 /*

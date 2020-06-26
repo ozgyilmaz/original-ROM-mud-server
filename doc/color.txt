@@ -1,0 +1,29 @@
+Rom 2.4b6 with 8bit colors ------
+
+Color codes are defined in color.h not to make an unreadable merc.h file.
+
+Predefined colors are common web colors with names. You can find the
+complete list from:
+https://www.w3schools.com/colors/colors_groups.asp
+
+Colors are defined with RGB codes like (<number>,<number>,<number>).
+Every number has a range from 0 to 255.
+
+RGB(a,b,c) macro convert the RGB code to a string starting with an escape
+character and a value that defined 8bit color code. I didn't prefer
+to defined the colors with a non-readable escape code. RGB codes make it more
+readable and also easy to add new values.
+
+Color is only used in do_who() function in act_info.c file to demonstrate the
+usage.
+
+A sample screenshot of who command output can be find media folder.
+
+![Alt text](/media/who_command_output.png?raw=true "who command output")
+
+The code is compiled on:
+- CentOS 7.8.2003
+- gcc (GCC) 4.8.5 20150623
+
+The client is Mudlet 4.9.1
+https://www.mudlet.org/
