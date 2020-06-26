@@ -6,7 +6,7 @@ Predefined colors are common web colors with names. You can find the<br/>
 complete list from:<br/>
 https://www.w3schools.com/colors/colors_groups.asp<br/>
 <br/>
-Colors are defined with RGB codes like (<number>,<number>,<number>).<br/>
+Colors are defined with RGB codes like (number,number,number).<br/>
 Every number has a range from 0 to 255.<br/>
 <br/>
 RGB(a,b,c) macro convert the RGB code to a string starting with an escape<br/>
