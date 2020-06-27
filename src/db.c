@@ -231,7 +231,7 @@ void	reset_area	args( ( AREA_DATA * pArea ) );
  */
 void boot_db( void )
 {
-
+  read_json_config();
     /*
      * Init some data space stuff.
      */

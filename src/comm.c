@@ -306,6 +306,9 @@ bool		    wizlock;		/* Game is wizlocked		*/
 bool		    newlock;		/* Game is newlocked		*/
 char		    str_boot_time[MAX_INPUT_LENGTH];
 time_t		    current_time;	/* time of this pulse */
+/* json config - test variables */
+char				first_json_config[MAX_INPUT_LENGTH];
+char				second_json_config[MAX_INPUT_LENGTH];
 
 
 

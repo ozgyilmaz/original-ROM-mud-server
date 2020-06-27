@@ -2278,6 +2278,9 @@ int	number_argument	args( ( char *argument, char *arg ) );
 int	mult_argument	args( ( char *argument, char *arg) );
 char *	one_argument	args( ( char *argument, char *arg_first ) );
 
+/* json.c */
+bool  	read_json_config	args( ( void ) );
+
 /* magic.c */
 int	find_spell	args( ( CHAR_DATA *ch, const char *name) );
 int 	mana_cost 	(CHAR_DATA *ch, int min_mana, int level);

@@ -6,7 +6,7 @@ L_FLAGS =  $(PROF)
 
 O_FILES = act_comm.o act_enter.o act_info.o act_move.o act_obj.o act_wiz.o \
           alias.o ban.o comm.o const.o db.o db2.o effects.o fight.o flags.o \
-	  handler.o healer.o interp.o note.o lookup.o magic.o magic2.o \
+	  handler.o healer.o interp.o json.o note.o lookup.o magic.o magic2.o \
 	  music.o recycle.o save.o scan.o skills.o special.o tables.o \
 	  update.o -lcrypt
 
