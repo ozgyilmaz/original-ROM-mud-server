@@ -2060,19 +2060,27 @@ void do_who( CHAR_DATA *ch, char *argument )
 	/*
 	 * Format it up.
 	 */
-	sprintf( buf, "[%2d %6s %s] %s%s%s%s%s%s%s%s\n\r",
-	    wch->level,
-	    wch->race < MAX_PC_RACE ? pc_race_table[wch->race].who_name
-				    : "     ",
+	sprintf( buf, "%s[%s%2d %s%6s %s%s%s] %s%s%s%s%s%s%s%s%s%s%s%s\n\r",
+      CLR_SADDLE_BROWN,
+      CLR_DARK_GOLDEN_ROD,
+      wch->level,
+      CLR_SIENNA,
+	    wch->race < MAX_PC_RACE ? pc_race_table[wch->race].who_name: "     ",
+      CLR_BROWN,
 	    iclass,
+      CLR_SADDLE_BROWN,
+      CLR_DARK_SLATE_GRAY,
 	    wch->incog_level >= LEVEL_HERO ? "(Incog) " : "",
 	    wch->invis_level >= LEVEL_HERO ? "(Wizi) " : "",
 	    clan_table[wch->clan].who_name,
 	    IS_SET(wch->comm, COMM_AFK) ? "[AFK] " : "",
             IS_SET(wch->act, PLR_KILLER) ? "(KILLER) " : "",
             IS_SET(wch->act, PLR_THIEF)  ? "(THIEF) "  : "",
+      CLR_RESET,
 	    wch->name,
-	    IS_NPC(wch) ? "" : wch->pcdata->title );
+      CLR_ORANGE,
+	    IS_NPC(wch) ? "" : wch->pcdata->title,
+      CLR_RESET );
 	add_buf(output,buf);
     }
 
