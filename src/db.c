@@ -349,7 +349,7 @@ void boot_db( void )
 		else if ( !str_cmp( word, "MOBOLD"   ) ) load_old_mob (fpArea);
 		else if ( !str_cmp( word, "MOBILES"  ) ) load_mobiles (fpArea);
 		else if ( !str_cmp( word, "OBJOLD"   ) ) load_old_obj (fpArea);
-	  	else if ( !str_cmp( word, "OBJECTS"  ) ) load_objects (fpArea);
+	  else if ( !str_cmp( word, "OBJECTS"  ) ) load_objects (fpArea);
 		else if ( !str_cmp( word, "RESETS"   ) ) load_resets  (fpArea);
 		else if ( !str_cmp( word, "ROOMS"    ) ) load_rooms   (fpArea);
 		else if ( !str_cmp( word, "SHOPS"    ) ) load_shops   (fpArea);
@@ -401,12 +401,19 @@ void load_area( FILE *fp )
     pArea->reset_last	= NULL;
     pArea->file_name	= fread_string(fp);
     pArea->name		= fread_string( fp );
+    fread_letter(fp);
+    pArea->low_range	= fread_number(fp);
+    pArea->high_range	= fread_number(fp);
+    fread_letter(fp);
+    pArea->writer	= str_dup( fread_word(fp) );
     pArea->credits	= fread_string( fp );
     pArea->min_vnum	= fread_number(fp);
     pArea->max_vnum	= fread_number(fp);
     pArea->age		= 15;
     pArea->nplayer	= 0;
     pArea->empty	= FALSE;
+
+    mysql_write_area( pArea );
 
     if ( area_first == NULL )
 	area_first = pArea;
@@ -436,7 +443,7 @@ void load_helps( FILE *fp )
 	if ( pHelp->keyword[0] == '$' )
 	    break;
 	pHelp->text	= fread_string( fp );
-
+  mysql_write_help( pHelp );
 	if ( !str_cmp( pHelp->keyword, "greeting" ) )
 	    help_greeting = pHelp->text;
 
@@ -572,6 +579,8 @@ void load_old_mob( FILE *fp )
 	    exit( 1 );
 	}
 
+  mysql_write_mobile( pMobIndex );
+
 	iHash			= vnum % MAX_KEY_HASH;
 	pMobIndex->next		= mob_index_hash[iHash];
 	mob_index_hash[iHash]	= pMobIndex;
@@ -671,6 +680,7 @@ void load_old_obj( FILE *fp )
 		paf->next		= pObjIndex->affected;
 		pObjIndex->affected	= paf;
 		top_affect++;
+    mysql_write_object_affect_data( paf, pObjIndex->vnum );
 	    }
 
 	    else if ( letter == 'E' )
@@ -683,6 +693,7 @@ void load_old_obj( FILE *fp )
 		ed->next		= pObjIndex->extra_descr;
 		pObjIndex->extra_descr	= ed;
 		top_ed++;
+    mysql_write_object_extra_description( ed, pObjIndex->vnum );
 	    }
 
 	    else
@@ -723,6 +734,7 @@ void load_old_obj( FILE *fp )
 	pObjIndex->next		= obj_index_hash[iHash];
 	obj_index_hash[iHash]	= pObjIndex;
 	top_obj_index++;
+  mysql_write_object( pObjIndex );
     }
 
     return;
@@ -771,7 +783,7 @@ void load_resets( FILE *fp )
 	pReset->arg4	= (letter == 'P' || letter == 'M')
 			    ? fread_number(fp) : 0;
 			  fread_to_eol( fp );
-
+  mysql_write_reset( pReset );
 	/*
 	 * Validate parameters.
 	 * We're calling the index functions for the side effect.
@@ -970,6 +982,7 @@ void load_rooms( FILE *fp )
 
 		pRoomIndex->exit[door]	= pexit;
 		pRoomIndex->old_exit[door] = pexit;
+    mysql_write_exit( pexit, pRoomIndex->vnum, door );
 		top_exit++;
 	    }
 	    else if ( letter == 'E' )
@@ -981,6 +994,7 @@ void load_rooms( FILE *fp )
 		ed->description		= fread_string( fp );
 		ed->next		= pRoomIndex->extra_descr;
 		pRoomIndex->extra_descr	= ed;
+    mysql_write_room_extra_description(ed, pRoomIndex->vnum);
 		top_ed++;
 	    }
 
@@ -1001,6 +1015,8 @@ void load_rooms( FILE *fp )
 		exit( 1 );
 	    }
 	}
+
+  mysql_write_room(pRoomIndex);
 
 	iHash			= vnum % MAX_KEY_HASH;
 	pRoomIndex->next	= room_index_hash[iHash];
@@ -1038,7 +1054,7 @@ void load_shops( FILE *fp )
 				  fread_to_eol( fp );
 	pMobIndex		= get_mob_index( pShop->keeper );
 	pMobIndex->pShop	= pShop;
-
+  mysql_write_shop( pShop );
 	if ( shop_first == NULL )
 	    shop_first = pShop;
 	if ( shop_last  != NULL )
@@ -1058,6 +1074,8 @@ void load_shops( FILE *fp )
  */
 void load_specials( FILE *fp )
 {
+  char *temp;
+
     for ( ; ; )
     {
 	MOB_INDEX_DATA *pMobIndex;
@@ -1077,12 +1095,14 @@ void load_specials( FILE *fp )
 
 	case 'M':
 	    pMobIndex		= get_mob_index	( fread_number ( fp ) );
-	    pMobIndex->spec_fun	= spec_lookup	( fread_word   ( fp ) );
+      temp = fread_word(fp);
+	    pMobIndex->spec_fun	= spec_lookup	( temp );
 	    if ( pMobIndex->spec_fun == 0 )
 	    {
 		bug( "Load_specials: 'M': vnum %d.", pMobIndex->vnum );
 		exit( 1 );
 	    }
+      mysql_write_mobile_special( pMobIndex, temp );
 	    break;
 	}
 

@@ -1632,6 +1632,7 @@ struct	area_data
     RESET_DATA *	reset_last;
     char *		file_name;
     char *		name;
+		char *		writer;
     char *		credits;
     sh_int		age;
     sh_int		nplayer;
@@ -2286,6 +2287,23 @@ int	slot_lookup	args( ( int slot ) );
 bool	saves_spell	args( ( int level, CHAR_DATA *victim, int dam_type ) );
 void	obj_cast_spell	args( ( int sn, int level, CHAR_DATA *ch,
 				    CHAR_DATA *victim, OBJ_DATA *obj ) );
+
+/* rom_mysql.c */
+void mysql_log_communication	args( ( char *channel , CHAR_DATA *ch, CHAR_DATA *victim , int room_vnum , char *data ) );
+void mysql_write_area args(( AREA_DATA *pArea ));
+void mysql_write_room args(( ROOM_INDEX_DATA *pRoomIndex ));
+void mysql_write_exit args(( EXIT_DATA *pexit, int room_vnum, int door ));
+void mysql_write_room_extra_description args(( EXTRA_DESCR_DATA *ed, int room_vnum ));
+void mysql_write_object_extra_description args(( EXTRA_DESCR_DATA *ed, int object_vnum ));
+void mysql_write_help args(( HELP_DATA *pHelp ));
+void mysql_write_social args(( char *name, char *char_no_arg, char *others_no_arg, char *char_found, char *others_found, char *vict_found, char *char_not_found, char *char_auto, char *others_auto ));
+void mysql_write_shop args(( SHOP_DATA *pShop ));
+void mysql_write_reset args(( RESET_DATA *pReset ));
+void mysql_write_mobile args(( MOB_INDEX_DATA *pMobIndex ));
+void mysql_write_object_affect_data args(( AFFECT_DATA *paf, int object_vnum ));
+void mysql_write_object args(( OBJ_INDEX_DATA *pObjIndex ));
+void mysql_write_mobile_special args(( MOB_INDEX_DATA *pMobIndex, char *name ));
+
 /* save.c */
 void	save_char_obj	args( ( CHAR_DATA *ch ) );
 bool	load_char_obj	args( ( DESCRIPTOR_DATA *d, char *name ) );

@@ -754,6 +754,11 @@ void do_say( CHAR_DATA *ch, char *argument )
 	return;
     }
 
+    if( !IS_NPC( ch ) )
+  	{
+  		mysql_log_communication( "say" , ch , NULL , ch->in_room->vnum , argument );
+  	}
+
     act( "$n says '$T'", ch, NULL, argument, TO_ROOM );
     act( "You say '$T'", ch, NULL, argument, TO_CHAR );
     return;
